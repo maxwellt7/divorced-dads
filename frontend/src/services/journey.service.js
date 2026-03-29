@@ -3,27 +3,27 @@ import api from './api';
 export const journeyService = {
   async createJourney(data) {
     const response = await api.post('/api/journeys', data);
-    return response.data.journey;
+    return response.journey;
   },
 
   async listJourneys(params = {}) {
     const response = await api.get('/api/journeys', { params });
-    return response.data.journeys;
+    return response.journeys;
   },
 
   async getJourney(id) {
     const response = await api.get(`/api/journeys/${id}`);
-    return response.data.journey;
+    return response.journey;
   },
 
   async getJourneyDay(journeyId, dayNumber) {
     const response = await api.get(`/api/journeys/${journeyId}/days/${dayNumber}`);
-    return response.data.day;
+    return response.day;
   },
 
   async markDayComplete(journeyId, dayNumber) {
     const response = await api.post(`/api/journeys/${journeyId}/days/${dayNumber}/complete`);
-    return response.data.day;
+    return response.day;
   },
 
   async deleteJourney(id) {
@@ -32,4 +32,3 @@ export const journeyService = {
 };
 
 export default journeyService;
-

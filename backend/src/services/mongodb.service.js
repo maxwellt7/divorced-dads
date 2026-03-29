@@ -188,8 +188,10 @@ export class MongoDBService {
       const evaluations = db.collection('evaluations');
 
       return await evaluations
-        .findOne({ draftId: new ObjectId(draftId) })
-        .sort({ createdAt: -1 });
+        .find({ draftId: new ObjectId(draftId) })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .next();
     } catch (error) {
       logger.error('Error getting latest evaluation:', error);
       throw error;
