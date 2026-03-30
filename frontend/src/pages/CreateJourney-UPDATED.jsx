@@ -7,11 +7,11 @@ import { createJourneyWithN8N, pollJourneyStatus } from '../services/n8n-journey
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthStore } from '../store/authStore';
 
 export const CreateJourney = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   
   const [formData, setFormData] = useState({
     goal: '',

@@ -152,7 +152,7 @@ export class PineconeService {
   // Trends Operations
   async upsertTrend(interest, data) {
     try {
-      const text = this.formatTrendData(data);
+      const text = this.formatTrendData({ ...data, interest });
       const embedding = await generateEmbedding(text);
       const trendId = `${interest}-${data.subInterest}-${Date.now()}`;
 

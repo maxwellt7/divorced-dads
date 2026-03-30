@@ -3,18 +3,18 @@ import api from './api';
 export const authService = {
   async register(data) {
     const response = await api.post('/api/auth/register', data);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    if (response.token) {
+      localStorage.setItem('token', response.token);
     }
-    return response.data;
+    return response;
   },
 
   async login(credentials) {
     const response = await api.post('/api/auth/login', credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    if (response.token) {
+      localStorage.setItem('token', response.token);
     }
-    return response.data;
+    return response;
   },
 
   async logout() {
@@ -24,12 +24,12 @@ export const authService = {
 
   async getMe() {
     const response = await api.get('/api/auth/me');
-    return response.data.user;
+    return response.user;
   },
 
   async changePassword(data) {
     const response = await api.post('/api/auth/change-password', data);
-    return response.data;
+    return response;
   },
 
   getToken() {
@@ -42,4 +42,3 @@ export const authService = {
 };
 
 export default authService;
-

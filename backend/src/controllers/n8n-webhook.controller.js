@@ -5,7 +5,7 @@
 
 import { ObjectId } from 'mongodb';
 import logger from '../utils/logger.js';
-import { sendEmail } from '../services/email.service.js';
+import { emailService } from '../services/email.service.js';
 import { getMongoDb } from '../config/mongodb.js';
 
 /**
@@ -276,7 +276,7 @@ async function sendJourneyCompleteEmail(user, journey) {
     </html>
   `;
 
-  await sendEmail({
+  await emailService.sendEmail({
     to: user.email,
     subject: 'Your 7-Day Hypnosis Journey is Ready! 🎉',
     html: emailHtml
@@ -304,7 +304,7 @@ async function sendErrorNotification(journeyId, userId, error, errorDetails) {
     </html>
   `;
 
-  await sendEmail({
+  await emailService.sendEmail({
     to: adminEmail,
     subject: `Journey Generation Error - ${journeyId}`,
     html: emailHtml
