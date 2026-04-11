@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Sparkles, Brain, Headphones, TrendingUp, CheckCircle } from 'lucide-react';
-import { track, Events } from '../utils/analytics';
+import { track, Events, pixelLead } from '../utils/analytics';
 
 export default function Landing() {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ export default function Landing() {
     e.preventDefault();
     if (!email) return;
     track(Events.LANDING_EMAIL_CAPTURE, { email });
+    pixelLead();
     setEmailSubmitted(true);
   };
 

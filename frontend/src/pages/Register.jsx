@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Sparkles } from 'lucide-react';
-import { track, identify, Events } from '../utils/analytics';
+import { track, identify, Events, pixelCompleteRegistration } from '../utils/analytics';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ export default function Register() {
     try {
       const user = await register(formData);
       track(Events.SIGNUP_COMPLETED, { method: 'email' });
+      pixelCompleteRegistration();
       if (user?.id) identify(user.id, { name: formData.name, email: formData.email });
       toast.success('Account created successfully!');
       navigate('/onboarding');
