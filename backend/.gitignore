@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 
 # Environment Variables
@@ -33,6 +32,7 @@ Thumbs.db
 # Google Credentials
 *.json
 !package.json
+!package-lock.json
 !tsconfig.json
 
 # Build
