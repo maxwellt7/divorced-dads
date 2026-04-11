@@ -49,5 +49,8 @@
     "wellness"
   ],
   "author": "Max Mayes",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.9.0"
+  }
 }
