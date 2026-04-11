@@ -4,11 +4,17 @@ import { logger } from '../utils/logger.js';
 
 export class PineconeService {
   constructor() {
-    this.userInfoIndex = getUserInfoIndex();
-    this.knowledgeIndex = getKnowledgeIndex();
-    this.creationsIndex = getCreationsIndex();
-    this.trendsIndex = getTrendsIndex();
+    // Indexes are resolved lazily so the server can start without PINECONE_API_KEY
+    this._userInfoIndex = null;
+    this._knowledgeIndex = null;
+    this._creationsIndex = null;
+    this._trendsIndex = null;
   }
+
+  get userInfoIndex() { return this._userInfoIndex || (this._userInfoIndex = getUserInfoIndex()); }
+  get knowledgeIndex() { return this._knowledgeIndex || (this._knowledgeIndex = getKnowledgeIndex()); }
+  get creationsIndex() { return this._creationsIndex || (this._creationsIndex = getCreationsIndex()); }
+  get trendsIndex() { return this._trendsIndex || (this._trendsIndex = getTrendsIndex()); }
 
   // User Information Operations
   async upsertUserInformation(userId, data) {
