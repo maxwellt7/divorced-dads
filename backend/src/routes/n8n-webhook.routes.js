@@ -42,5 +42,27 @@ router.post(
   n8nWebhookController.handleJourneyProgress
 );
 
+/**
+ * @route   POST /api/webhooks/n8n/audio-ready
+ * @desc    Handle individual audio file ready webhook from n8n
+ * @access  Private (N8N only)
+ */
+router.post(
+  '/audio-ready',
+  verifyN8NWebhook,
+  n8nWebhookController.handleAudioReady
+);
+
+/**
+ * @route   POST /api/webhooks/n8n/error
+ * @desc    Handle generic journey error webhook from n8n
+ * @access  Private (N8N only)
+ */
+router.post(
+  '/error',
+  verifyN8NWebhook,
+  n8nWebhookController.handleJourneyError
+);
+
 export default router;
 

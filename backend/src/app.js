@@ -12,7 +12,6 @@ import journeyRoutes from './routes/journey.routes.js';
 import journalRoutes from './routes/journal.routes.js';
 import statsRoutes from './routes/stats.routes.js';
 import adminRoutes from './routes/admin.routes.js';
-import webhookRoutes from './routes/webhook.routes.js';
 import n8nWebhookRoutes from './routes/n8n-webhook.routes.js';
 
 const app = express();
@@ -61,7 +60,6 @@ app.use('/api/journeys', journeyRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/webhooks', webhookRoutes);
 app.use('/api/webhooks/n8n', n8nWebhookRoutes);
 
 // 404 handler

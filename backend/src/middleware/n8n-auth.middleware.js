@@ -3,7 +3,7 @@
  * Verifies that webhook requests are coming from our n8n instance
  */
 
-import logger from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Verify N8N webhook requests
