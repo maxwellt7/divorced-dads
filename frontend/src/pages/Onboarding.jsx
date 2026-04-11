@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { track, Events } from '../utils/analytics';
 
 const questions = [
   {
@@ -171,6 +172,7 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (currentStep < totalPages - 1) {
+      track(Events.ONBOARDING_STEP, { step: currentStep + 1, total_steps: totalPages });
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -194,10 +196,15 @@ export default function Onboarding() {
 
     try {
       const profile = await completeOnboarding({ responses });
-      
+
       // Update user in auth store with new profile
       updateUser((prev) => ({ ...prev, profile }));
-      
+
+      track(Events.ONBOARDING_COMPLETE, {
+        primary_goal: responses.primary_goal,
+        experience_level: responses.experience_level,
+      });
+
       toast.success('Profile created! Let\'s create your first journey.');
       navigate('/create-journey');
     } catch (error) {

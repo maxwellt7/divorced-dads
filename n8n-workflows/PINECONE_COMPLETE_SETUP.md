@@ -6,7 +6,7 @@ This guide will help you set up all 4 Pinecone indices needed for the hypnosis j
 
 **What You Need:**
 - Pinecone account (free tier works fine)
-- API Key: `pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe`
+- API Key: `your-pinecone-api-key`
 - Environment: `us-east-1`
 
 ---
@@ -25,7 +25,7 @@ This guide will help you set up all 4 Pinecone indices needed for the hypnosis j
 1. Log in to Pinecone console: https://app.pinecone.io
 2. Click on "API Keys" in the left sidebar
 3. You should see:
-   - **API Key**: `pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe`
+   - **API Key**: `your-pinecone-api-key`
    - **Environment**: `us-east-1`
 
 **⚠️ Security Note**: After this setup, rotate your API key for security!
@@ -102,7 +102,7 @@ If you prefer command line:
 pip install pinecone-client
 
 # Set your API key
-export PINECONE_API_KEY="pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe"
+export PINECONE_API_KEY="your-pinecone-api-key"
 
 # Create indices
 pinecone create-index user-information --dimension 1536 --metric cosine
@@ -125,7 +125,7 @@ import pinecone
 import os
 
 # Configuration
-API_KEY = "pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe"
+API_KEY = "your-pinecone-api-key"
 ENVIRONMENT = "us-east-1"
 
 # Initialize Pinecone
@@ -204,7 +204,7 @@ interest-trends
 ### Via API:
 ```bash
 curl -X GET "https://controller.us-east-1.pinecone.io/databases" \
-  -H "Api-Key: pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe"
+  -H "Api-Key: your-pinecone-api-key"
 ```
 
 ---
@@ -266,7 +266,7 @@ from openai import OpenAI
 
 # Initialize
 pinecone.init(
-    api_key="pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe",
+    api_key="your-pinecone-api-key",
     environment="us-east-1"
 )
 openai = OpenAI(api_key="your-openai-key")
@@ -405,7 +405,7 @@ After Pinecone is set up:
 
 ## Quick Reference
 
-**API Key**: `pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe`  
+**API Key**: `your-pinecone-api-key`  
 **Environment**: `us-east-1`  
 **Dimensions**: `1536`  
 **Metric**: `cosine`

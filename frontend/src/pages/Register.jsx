@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Sparkles } from 'lucide-react';
+import { track, identify, Events } from '../utils/analytics';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -18,9 +19,13 @@ export default function Register() {
     phone: '',
   });
 
+  useEffect(() => {
+    track(Events.SIGNUP_STARTED);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password.length < 8) {
       toast.error('Password must be at least 8 characters');
       return;
@@ -29,7 +34,9 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register(formData);
+      const user = await register(formData);
+      track(Events.SIGNUP_COMPLETED, { method: 'email' });
+      if (user?.id) identify(user.id, { name: formData.name, email: formData.email });
       toast.success('Account created successfully!');
       navigate('/onboarding');
     } catch (error) {

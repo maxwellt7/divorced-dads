@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { useAuthStore } from './store/authStore';
+import { page } from './utils/analytics';
 
 // Pages
 import Landing from './pages/Landing';
@@ -18,6 +19,14 @@ import Settings from './pages/Settings';
 
 // Protected Route Component
 import ProtectedRoute from './components/auth/ProtectedRoute';
+
+function PageTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    page(location.pathname);
+  }, [location.pathname]);
+  return null;
+}
 
 function App() {
   const { initialize, isLoading } = useAuthStore();
@@ -36,6 +45,7 @@ function App() {
 
   return (
     <Router>
+      <PageTracker />
       <Toaster position="top-right" richColors />
       <Routes>
         {/* Public routes */}

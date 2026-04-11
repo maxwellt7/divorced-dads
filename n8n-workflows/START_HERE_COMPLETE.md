@@ -57,7 +57,7 @@ I've created a **complete, production-ready system** for your AI Hypnosis Journe
 📖 Open: PINECONE_COMPLETE_SETUP.md
 
 Your credentials (already provided):
-- API Key: pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe
+- API Key: your-pinecone-api-key
 - Environment: us-east-1
 
 Create 4 indices:

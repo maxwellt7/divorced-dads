@@ -44,7 +44,7 @@ DEEPSEEK_API_KEY=your-deepseek-api-key
 
 # --- Vector Database ---
 # Pinecone
-PINECONE_API_KEY=pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe
+PINECONE_API_KEY=your-pinecone-api-key
 PINECONE_ENVIRONMENT=us-east-1
 PINECONE_INDEX_USER_INFO=user-information
 PINECONE_INDEX_KNOWLEDGE=core-hypnosis-knowledge

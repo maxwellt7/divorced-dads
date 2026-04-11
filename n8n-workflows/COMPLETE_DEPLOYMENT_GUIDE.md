@@ -113,7 +113,7 @@ JWT_SECRET=<generate strong random string>
 ANTHROPIC_API_KEY=sk-ant-...
 ELEVENLABS_API_KEY=...
 N8N_API_KEY=<generate strong random string>
-PINECONE_API_KEY=pcsk_2R6V3W...
+PINECONE_API_KEY=your-pinecone-api-key
 ```
 
 #### 2.3 Deploy to Railway
@@ -190,7 +190,7 @@ Follow the complete guide in [`PINECONE_COMPLETE_SETUP.md`](./PINECONE_COMPLETE_
 ```bash
 1. Go to https://app.pinecone.io
 2. Create account
-3. Get API key (already provided: pcsk_2R6V3W...)
+3. Get API key from Pinecone dashboard
 4. Create 4 indices (see guide for details):
    - user-information
    - core-hypnosis-knowledge
@@ -269,7 +269,7 @@ Private Key: (paste your private key)
 ##### Pinecone:
 ```
 Name: AI Agents
-API Key: pcsk_2R6V3W_U7BaEjBzNoPCmaBgMsmFmBH3ApA9GyqJxeMwugnCR63QeQwGpDhiorJr8msh3Qe
+API Key: your-pinecone-api-key
 Environment: us-east-1
 ```
 
