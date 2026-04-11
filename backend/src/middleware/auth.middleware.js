@@ -34,6 +34,9 @@ export const authenticate = async (req, res, next) => {
 
 export const requireAdmin = async (req, res, next) => {
   try {
+    if (!supabase) {
+      throw new AuthenticationError('Database not configured');
+    }
     // Check if user is admin
     const { data: user, error } = await supabase
       .from('users')

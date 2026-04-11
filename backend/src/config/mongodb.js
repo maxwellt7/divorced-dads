@@ -4,14 +4,14 @@ import { logger } from '../utils/logger.js';
 const MONGODB_URI = process.env.MONGODB_SCRIPTS_URI;
 
 if (!MONGODB_URI) {
-  logger.error('MongoDB configuration missing');
-  throw new Error('MONGODB_SCRIPTS_URI must be set');
+  logger.warn('MongoDB configuration missing — script storage routes will be unavailable until MONGODB_SCRIPTS_URI is set');
 }
 
 let client;
 let db;
 
 export const connectMongoDB = async () => {
+  if (!MONGODB_URI) throw new Error('MONGODB_SCRIPTS_URI is not configured');
   try {
     if (!client) {
       client = new MongoClient(MONGODB_URI, {

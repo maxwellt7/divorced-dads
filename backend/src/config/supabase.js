@@ -5,17 +5,19 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  logger.error('Supabase configuration missing');
-  throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY must be set');
+  logger.warn('Supabase configuration missing — auth and DB routes will be unavailable until SUPABASE_URL and SUPABASE_SERVICE_KEY are set');
 }
 
 // Create Supabase client with service role key (bypasses RLS)
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
+// Returns null if credentials are not yet configured
+export const supabase = supabaseUrl && supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+  : null;
 
 // Test connection
 export const testSupabaseConnection = async () => {
