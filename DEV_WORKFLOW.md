@@ -8,7 +8,7 @@ Sacred Heart runs with a strict separation between production and development. T
 
 | Layer | Production | Staging / Dev |
 |---|---|---|
-| Frontend | Vercel (from `main`) | Vercel preview URL (from any PR) |
+| Frontend | Vercel `ai-hypnosis-generator` (from `main`) | Vercel `ai-hypnosis-generator-staging` + PR preview URLs |
 | Backend | Railway — `production` service | Railway — `staging` service |
 | Database | Production Supabase project | Staging Supabase project |
 | MongoDB | Production Atlas cluster | Staging Atlas cluster / DB name |
@@ -32,26 +32,32 @@ Rules:
 
 ---
 
-## Vercel preview deployments (frontend)
+## Vercel deployments (frontend)
 
-Vercel is connected to the `maxwellt7/ai-hypnosis-generator` repo. Every pull request automatically gets a preview URL — no manual steps needed.
+There are two Vercel projects for this repo:
 
-- **Production**: deploys from `main` automatically after merge.
-- **Preview**: every PR branch gets its own URL (e.g. `ai-hypnosis-generator-git-feature-xyz-<team>.vercel.app`).
+| Project | URL | Deploys from |
+|---|---|---|
+| `ai-hypnosis-generator` | heart.sovereignty.app | `main` branch (production) |
+| `ai-hypnosis-generator-staging` | `<staging>.vercel.app` | `staging` branch (staging) |
 
-To use the preview frontend against the staging backend, set `VITE_API_URL` in Vercel's Preview environment to the Railway staging service URL.
+Every pull request also gets an **automatic preview URL** from the main Vercel project — no manual steps needed.
+
+To use a preview/staging frontend against the staging backend, set `VITE_API_URL` in the respective Vercel project's environment variables to the Railway staging service URL.
 
 ### Vercel environment variables to configure
 
-In the Vercel project dashboard → Settings → Environment Variables:
+**In `ai-hypnosis-generator` (production + previews)** → Settings → Environment Variables:
 
-| Variable | Production | Preview (staging) |
+| Variable | Production | Preview |
 |---|---|---|
 | `VITE_API_URL` | `https://your-prod-railway-url` | `https://your-staging-railway-url` |
 | `VITE_SUPABASE_URL` | prod Supabase URL | staging Supabase URL |
 | `VITE_SUPABASE_ANON_KEY` | prod anon key | staging anon key |
 | `VITE_N8N_WEBHOOK_URL` | prod n8n webhook | staging n8n webhook |
 | `VITE_POSTHOG_KEY` | prod PostHog key | staging PostHog key (or same) |
+
+**In `ai-hypnosis-generator-staging`** → Settings → Environment Variables: set the same `VITE_*` keys with staging values, pointing to the Railway `staging` service.
 
 ---
 
@@ -61,10 +67,10 @@ In the Vercel project dashboard → Settings → Environment Variables:
 
 1. Open the Railway project for Sacred Heart.
 2. Click **+ New Service → Deploy from repo**.
-3. Select `maxwellt7/ai-hypnosis-generator`, branch: **`staging`**.
+3. Select **`maxwellt7/ai-hypnosis-generator`**, branch: **`staging`**.
 4. Name the service `backend-staging`.
 5. In the service settings, set the start command (Railway auto-reads `railway.toml` so this may already work).
-6. Add all environment variables from `backend/.env.staging.example` — use separate Supabase/MongoDB/Pinecone values (see below).
+6. Add all environment variables from [`backend/.env.staging.example`](backend/.env.staging.example) — use separate Supabase/MongoDB/Pinecone values (see below).
 7. Note the service's public URL (e.g. `https://backend-staging-xxxx.up.railway.app`).
 
 ### Keeping staging in sync
@@ -113,7 +119,7 @@ These vars **can be shared** safely:
 ### Prerequisites
 
 - Node.js 20+ (`node -v` should show `v20.x.x`)
-- A `.env` file in `backend/` (copy `backend/.env.staging.example` → `backend/.env`, fill in staging values)
+- A `.env` file in `backend/` (copy [`backend/.env.staging.example`](backend/.env.staging.example) → `backend/.env`, fill in staging values)
 - A `.env.local` file in `frontend/` (copy `frontend/.env.example` → `frontend/.env.local`, set `VITE_API_URL=http://localhost:3000`)
 
 ### Running locally
@@ -122,7 +128,7 @@ These vars **can be shared** safely:
 
 ```bash
 cd backend
-cp .env.staging.example .env   # first time only — fill in your staging values
+cp .env.staging.example .env   # first time only — fill in your staging values (see backend/.env.staging.example)
 npm install                    # first time only
 npm run dev                    # starts on http://localhost:3000 with nodemon
 ```
