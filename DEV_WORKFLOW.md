@@ -8,12 +8,11 @@ Sacred Heart runs with a strict separation between production and development. T
 
 | Layer | Production | Staging / Dev |
 |---|---|---|
-| Frontend | Vercel `ai-hypnosis-generator` (from `main`) | Vercel `ai-hypnosis-generator-staging` + PR preview URLs |
-| Backend | Railway — `production` service | Railway — `staging` service |
-| Database | Production Supabase project | Staging Supabase project |
-| MongoDB | Production Atlas cluster | Staging Atlas cluster / DB name |
-| Pinecone | Production indexes | `-staging` suffixed indexes |
-| n8n | Production workflows | Staging / test webhook URLs |
+| Frontend | Vercel `ai-hypnosis-generator` → `heart.sovereignty.app` (from `main`) | Vercel `ai-hypnosis-generator-staging` → `ai-hypnosis-generator-staging.vercel.app` (from `staging`) |
+| Backend | Railway `nlp-training-backend` project — `production` environment | Railway `nlp-training-backend` project — `staging` environment |
+| Auth | Clerk (production app) | Clerk (staging app or shared with caution) |
+| Pinecone | Production indexes | `-staging` suffixed indexes (when enabled) |
+| Stripe | Live mode webhooks | Test mode webhooks |
 
 ---
 
@@ -23,6 +22,7 @@ Sacred Heart runs with a strict separation between production and development. T
 main            ← production-only. Never commit directly here.
   └── feature/your-feature   ← all development work
   └── fix/your-fix
+staging         ← staging baseline. Merge main → staging to update.
 ```
 
 Rules:
@@ -39,48 +39,55 @@ There are two Vercel projects for this repo:
 | Project | URL | Deploys from |
 |---|---|---|
 | `ai-hypnosis-generator` | heart.sovereignty.app | `main` branch (production) |
-| `ai-hypnosis-generator-staging` | `<staging>.vercel.app` | `staging` branch (staging) |
+| `ai-hypnosis-generator-staging` | `ai-hypnosis-generator-staging.vercel.app` | `staging` branch (staging) |
 
-Every pull request also gets an **automatic preview URL** from the main Vercel project — no manual steps needed.
-
-To use a preview/staging frontend against the staging backend, set `VITE_API_URL` in the respective Vercel project's environment variables to the Railway staging service URL.
+Every pull request also gets an **automatic preview URL** from the production Vercel project — no manual steps needed. Preview deployments should point to the Railway staging backend URL.
 
 ### Vercel environment variables to configure
 
-**In `ai-hypnosis-generator` (production + previews)** → Settings → Environment Variables:
+**In `ai-hypnosis-generator` (production Vercel project)** → Settings → Environment Variables:
 
-| Variable | Production | Preview |
+| Variable | Environment | Value |
 |---|---|---|
-| `VITE_API_URL` | `https://your-prod-railway-url` | `https://your-staging-railway-url` |
-| `VITE_SUPABASE_URL` | prod Supabase URL | staging Supabase URL |
-| `VITE_SUPABASE_ANON_KEY` | prod anon key | staging anon key |
-| `VITE_N8N_WEBHOOK_URL` | prod n8n webhook | staging n8n webhook |
-| `VITE_POSTHOG_KEY` | prod PostHog key | staging PostHog key (or same) |
+| `VITE_API_URL` | Production | `https://nlp-training-backend-production.up.railway.app` |
+| `VITE_API_URL` | Preview | `https://nlp-training-backend-staging.up.railway.app` |
 
-**In `ai-hypnosis-generator-staging`** → Settings → Environment Variables: set the same `VITE_*` keys with staging values, pointing to the Railway `staging` service.
+**In `ai-hypnosis-generator-staging`** → Settings → Environment Variables:
+
+| Variable | Value |
+|---|---|
+| `VITE_API_URL` | `https://nlp-training-backend-staging.up.railway.app` |
 
 ---
 
 ## Railway staging environment (backend)
 
-### One-time setup (board action required)
+The staging environment has already been created in the `nlp-training-backend` Railway project. It inherits all production env vars with two overrides:
 
-1. Open the Railway project for Sacred Heart.
-2. Click **+ New Service → Deploy from repo**.
-3. Select **`maxwellt7/ai-hypnosis-generator`**, branch: **`staging`**.
-4. Name the service `backend-staging`.
-5. In the service settings, set the start command (Railway auto-reads `railway.toml` so this may already work).
-6. Add all environment variables from [`backend/.env.staging.example`](backend/.env.staging.example) — use separate Supabase/MongoDB/Pinecone values (see below).
-7. Note the service's public URL (e.g. `https://backend-staging-xxxx.up.railway.app`).
+| Var | Staging value |
+|---|---|
+| `FRONTEND_URL` | `https://ai-hypnosis-generator-staging.vercel.app` |
+| `NODE_ENV` | `staging` |
+
+**Staging backend URL:** `https://nlp-training-backend-staging.up.railway.app`
+
+### One-time setup: connect staging branch (board action required)
+
+The staging environment needs its `nlp-training-backend` service to deploy from the `staging` git branch:
+
+1. Open [Railway → nlp-training-backend project](https://railway.app) → select **staging** environment.
+2. Click the `nlp-training-backend` service → **Settings** → **Source** tab.
+3. Under **GitHub repo**, select `maxwellt7/ai-hypnosis-generator` and set branch to `staging`.
+4. Save — Railway will auto-deploy on every push to `staging`.
 
 ### Keeping staging in sync
 
 ```bash
-# After merging a PR to main, update staging:
+# After a PR merges to main, update the staging baseline:
 git checkout staging
 git merge main
 git push origin staging
-# Railway will auto-redeploy the staging service.
+# Railway auto-redeploys the staging service.
 ```
 
 ---
@@ -92,25 +99,24 @@ These vars **must** differ between staging and production to prevent dev work fr
 | Variable | Why it differs |
 |---|---|
 | `NODE_ENV` | `staging` vs `production` |
-| `FRONTEND_URL` | Vercel preview URL vs heart.sovereignty.app |
-| `SUPABASE_URL` | Separate Supabase project |
-| `SUPABASE_SERVICE_KEY` | Separate service key |
-| `SUPABASE_ANON_KEY` | Separate anon key |
-| `MONGODB_SCRIPTS_URI` | Separate cluster or DB name suffix |
-| `PINECONE_INDEX_*` | `-staging` suffixed index names |
-| `N8N_WEBHOOK_URL` | Staging/test n8n workflow webhook |
-| `JWT_SECRET` | Different secret (no session crossover) |
+| `FRONTEND_URL` | Vercel staging URL vs heart.sovereignty.app |
+| `JWT_SECRET` | Different secret — prevents session crossover |
+| `REFRESH_TOKEN_SECRET` | Same reason |
+| `STRIPE_WEBHOOK_SECRET` | Use Stripe test-mode webhook secret |
+| `CLERK_PUBLISHABLE_KEY` | Ideally use Clerk staging app |
+| `CLERK_SECRET_KEY` | Same |
+| `PINECONE_INDEX_*` | `-staging` suffixed index names (when Pinecone is enabled) |
+| `GHL_API_KEY` / `GHL_LOCATION_ID` | Use GHL test sub-account if available |
 
 These vars **can be shared** safely:
 
 | Variable | Notes |
 |---|---|
-| `OPENAI_API_KEY` | API calls are stateless — safe to share |
-| `ANTHROPIC_API_KEY` | Same |
-| `DEEPSEEK_API_KEY` | Same |
-| `COHERE_API_KEY` | Same |
-| `ELEVENLABS_API_KEY` | Same |
-| `GOOGLE_CREDENTIALS_JSON` | Same service account is fine |
+| `ANTHROPIC_API_KEY` | API calls are stateless — safe to share |
+| `ELEVENLABS_API_KEY` / voice IDs | Same |
+| `META_CAPI_TOKEN` | Same |
+| `PROVISION_SECRET` | OK to share or use a different value |
+| `ENABLE_*` flags | Set independently per environment |
 
 ---
 
@@ -120,7 +126,7 @@ These vars **can be shared** safely:
 
 - Node.js 20+ (`node -v` should show `v20.x.x`)
 - A `.env` file in `backend/` (copy [`backend/.env.staging.example`](backend/.env.staging.example) → `backend/.env`, fill in staging values)
-- A `.env.local` file in `frontend/` (copy `frontend/.env.example` → `frontend/.env.local`, set `VITE_API_URL=http://localhost:3000`)
+- A `.env.local` file in `frontend/` (copy `frontend/.env.example` → `frontend/.env.local`, set `VITE_API_URL=http://localhost:3001`)
 
 ### Running locally
 
@@ -128,9 +134,9 @@ These vars **can be shared** safely:
 
 ```bash
 cd backend
-cp .env.staging.example .env   # first time only — fill in your staging values (see backend/.env.staging.example)
+cp .env.staging.example .env   # first time only — fill in your values
 npm install                    # first time only
-npm run dev                    # starts on http://localhost:3000 with nodemon
+npm run dev                    # starts on http://localhost:3001 with nodemon
 ```
 
 **Terminal 2 — Frontend:**
@@ -142,12 +148,10 @@ npm install                    # first time only
 npm run dev                    # starts on http://localhost:5173
 ```
 
-The Vite dev server proxies `/api/*` to `http://localhost:3000`, so the frontend talks directly to your local backend.
-
 ### Health check
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3001/health
 ```
 
 ---
@@ -183,10 +187,10 @@ git commit -m "feat: add my feature"
 
 # 4. Push and open PR
 git push -u origin feature/my-feature
-# Open PR on GitHub — Vercel preview URL appears automatically
+# Open PR on GitHub — Vercel preview URL appears automatically, pointing to staging backend
 
 # 5. Test with staging backend
-# Point your .env.local VITE_API_URL to the staging Railway URL for end-to-end testing
+# The preview deployment automatically uses VITE_API_URL for Preview env in Vercel
 
 # 6. Get PR approved and merge to main
 # Production auto-deploys from main via Vercel + Railway
@@ -198,5 +202,5 @@ git push -u origin feature/my-feature
 
 1. **Stop immediately** — do not make more changes.
 2. Check Railway logs for the production service to assess impact.
-3. If data was written: notify the team and roll back via Supabase/MongoDB backups.
-4. If only code was deployed: Railway supports instant rollbacks from the Deployments tab.
+3. If only code was deployed: Railway supports instant rollbacks from the Deployments tab.
+4. Notify the team of what happened.
