@@ -47,7 +47,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
             <Sparkles className="h-8 w-8 text-primary-600" />
-            <span className="text-2xl font-bold gradient-text">Hypnosis Generator</span>
+            <span className="text-2xl font-bold gradient-text">Divorced Dads</span>
           </Link>
         </div>
 

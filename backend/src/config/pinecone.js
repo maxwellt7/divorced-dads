@@ -23,7 +23,7 @@ const requirePinecone = () => {
 
 // Get index references
 export const getUserInfoIndex = () => requirePinecone().index(process.env.PINECONE_INDEX_USER_INFO || 'user-information');
-export const getKnowledgeIndex = () => requirePinecone().index(process.env.PINECONE_INDEX_KNOWLEDGE || 'core-hypnosis-knowledge');
+export const getKnowledgeIndex = () => requirePinecone().index(process.env.PINECONE_INDEX_KNOWLEDGE || 'divorced-dads-knowledge');
 export const getCreationsIndex = () => requirePinecone().index(process.env.PINECONE_INDEX_CREATIONS || 'past-creations');
 export const getTrendsIndex = () => requirePinecone().index(process.env.PINECONE_INDEX_TRENDS || 'interest-trends');
 

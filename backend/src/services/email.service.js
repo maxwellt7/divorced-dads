@@ -15,7 +15,7 @@ export class EmailService {
   async sendEmail({ to, subject, html }) {
     try {
       const info = await this.transporter.sendMail({
-        from: `"Hypnosis Generator" <${process.env.GMAIL_USER}>`,
+        from: `"Divorced Dads" <${process.env.GMAIL_USER}>`,
         to,
         subject,
         html,
@@ -50,8 +50,8 @@ export class EmailService {
           </div>
           <div class="content">
             <p>Hi ${data.name},</p>
-            <p>Great news! Your personalized 7-day hypnosis journey for <strong>${data.goal}</strong> is now ready and waiting for you.</p>
-            <p>Your custom audio tracks have been carefully crafted based on your unique profile and intentions.</p>
+            <p>Great news! Your personalized 16-week program for <strong>${data.goal}</strong> is now ready and waiting for you.</p>
+            <p>Your custom curriculum has been carefully crafted based on your unique profile and goals.</p>
             <p style="text-align: center;">
               <a href="${process.env.FRONTEND_URL}/dashboard/journey/${data.journeyId}" class="button">
                 Start Your Journey
@@ -65,7 +65,7 @@ export class EmailService {
               <li>Keep a journal of your progress</li>
             </ul>
             <p>We're excited to be part of your transformation journey!</p>
-            <p>Warm regards,<br>The Hypnosis Generator Team</p>
+            <p>Warm regards,<br>The Divorced Dads Team</p>
           </div>
           <div class="footer">
             <p>Questions? Reply to this email or visit our support center.</p>
@@ -77,7 +77,7 @@ export class EmailService {
 
     return this.sendEmail({
       to,
-      subject: 'Your Personalized Hypnosis Journey is Ready! 🎉',
+      subject: 'Your Divorced Dads Program is Ready! 🎉',
       html,
     });
   }
@@ -103,7 +103,7 @@ export class EmailService {
           </div>
           <div class="content">
             <p>Hi ${data.name},</p>
-            <p>Day ${data.dayNumber} of your hypnosis journey awaits!</p>
+            <p>Day ${data.dayNumber} of your Divorced Dads program awaits!</p>
             <p><strong>Today's Focus:</strong> ${data.dayTitle}</p>
             <p style="text-align: center;">
               <a href="${process.env.FRONTEND_URL}/dashboard" class="button">
@@ -143,12 +143,12 @@ export class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Welcome to Hypnosis Generator! 🌟</h1>
+            <h1>Welcome to Divorced Dads! 🌟</h1>
           </div>
           <div class="content">
             <p>Hi ${data.name},</p>
             <p>Welcome to your journey of transformation! We're thrilled to have you here.</p>
-            <p>With AI-powered hypnosis, you're about to experience personalized sessions designed specifically for your goals and preferences.</p>
+            <p>You're about to start a 16-week personal development journey designed specifically for divorced dads who want to become better fathers and men.</p>
             <p><strong>Getting Started:</strong></p>
             <ol>
               <li>Complete your onboarding questionnaire</li>
@@ -162,7 +162,7 @@ export class EmailService {
               </a>
             </p>
             <p>Here's to your transformation! 🚀</p>
-            <p>Best regards,<br>The Hypnosis Generator Team</p>
+            <p>Best regards,<br>The Divorced Dads Team</p>
           </div>
         </div>
       </body>

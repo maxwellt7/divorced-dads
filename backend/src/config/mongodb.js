@@ -20,7 +20,7 @@ export const connectMongoDB = async () => {
       });
       
       await client.connect();
-      db = client.db('hypnosis-scripts');
+      db = client.db('divorced-dads-scripts');
       
       logger.info('✅ MongoDB connection successful');
     }

@@ -32,7 +32,7 @@ export const JOURNEY_DAYS_COUNT = 7;
 
 export const PINECONE_NAMESPACES = {
   USER_INFO: 'user-information',
-  KNOWLEDGE: 'core-hypnosis-knowledge',
+  KNOWLEDGE: 'divorced-dads-knowledge',
   CREATIONS: 'past-creations',
   TRENDS: 'interest-trends',
 };
