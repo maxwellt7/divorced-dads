@@ -31,7 +31,7 @@ export default function Dashboard() {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Sparkles className="h-6 w-6 text-primary-600" />
-            <span className="text-xl font-bold gradient-text">Hypnosis Generator</span>
+            <span className="text-xl font-bold gradient-text">Divorced Dads</span>
           </div>
           <div className="flex items-center space-x-4">
             <Link to="/dashboard/stats">

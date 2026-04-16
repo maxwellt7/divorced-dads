@@ -1,8 +1,8 @@
 {
-  "name": "hypnosis-generator-backend",
+  "name": "divorced-dads-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Backend API for AI Hypnosis Generator",
+  "description": "Backend API for Divorced Dads personal development app",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -43,10 +43,9 @@
     "supertest": "^6.3.3"
   },
   "keywords": [
-    "hypnosis",
-    "ai",
-    "meditation",
-    "wellness"
+    "divorced dads",
+    "personal development",
+    "ai coaching"
   ],
   "author": "Max Mayes",
   "license": "UNLICENSED",

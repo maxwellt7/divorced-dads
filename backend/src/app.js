@@ -14,6 +14,12 @@ import statsRoutes from './routes/stats.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import n8nWebhookRoutes from './routes/n8n-webhook.routes.js';
 
+// Divorced Dads routes
+import curriculumRoutes from './routes/curriculum.routes.js';
+import tasksRoutes from './routes/tasks.routes.js';
+import progressRoutes from './routes/progress.routes.js';
+import dailyTaskRoutes from './routes/daily-task.routes.js';
+
 const app = express();
 
 // Security middleware
@@ -61,6 +67,12 @@ app.use('/api/journal', journalRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/webhooks/n8n', n8nWebhookRoutes);
+
+// Divorced Dads — curriculum & progress
+app.use('/api/curriculum', curriculumRoutes);
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/daily-task', dailyTaskRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
