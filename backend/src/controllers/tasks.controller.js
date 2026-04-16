@@ -1,4 +1,5 @@
 import supabase from '../config/supabase.js';
+import { stripeService } from '../services/stripe.service.js';
 
 const PROGRAM_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
@@ -40,7 +41,7 @@ export const tasksController = {
   // GET /api/daily-task — get the user's current task based on their progress
   async getDailyTask(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
 
       const { data: progress, error: pErr } = await supabase
         .from('user_progress')
@@ -56,7 +57,23 @@ export const tasksController = {
 
       if (pErr) throw pErr;
 
-      return tasksController._fetchTask(progress.current_week, progress.current_day, res, next);
+      const currentWeek = progress.current_week;
+
+      // Subscription gate: week 2+ requires active subscription
+      if (currentWeek > 1) {
+        const sub = await stripeService.getSubscriptionStatus(userId);
+        if (!sub.hasFullAccess) {
+          return res.status(402).json({
+            success: false,
+            error: 'Subscription required',
+            code: 'SUBSCRIPTION_REQUIRED',
+            message: 'Access to weeks 2-16 requires an active subscription.',
+            currentWeek,
+          });
+        }
+      }
+
+      return tasksController._fetchTask(currentWeek, progress.current_day, res, next);
     } catch (err) {
       next(err);
     }

@@ -23,6 +23,9 @@ export default function Landing() {
             <span className="text-2xl font-bold text-white">Divorced Dads</span>
           </div>
           <div className="flex items-center space-x-4">
+            <Link to="/pricing">
+              <Button variant="ghost" className="text-gray-300 hover:text-white">Pricing</Button>
+            </Link>
             <Link to="/login">
               <Button variant="ghost" className="text-gray-300 hover:text-white">Login</Button>
             </Link>
@@ -148,6 +151,30 @@ export default function Landing() {
               <p className="text-xs text-gray-500 mt-3">No spam. Unsubscribe anytime.</p>
             </>
           )}
+        </div>
+      </div>
+
+      {/* Pricing CTA */}
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-3xl mx-auto text-center bg-slate-800/50 border border-blue-500/30 rounded-2xl p-10">
+          <p className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-3">Pricing</p>
+          <h2 className="text-3xl font-bold text-white mb-4">Week 1 is free. Always.</h2>
+          <p className="text-gray-300 mb-8">
+            7 days of daily tasks, AI coaching, and progress tracking — no card required.
+            Unlock the full 16-week journey when you're ready to commit.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/register">
+              <Button size="lg" variant="gradient" className="text-lg px-8">
+                Start Week 1 Free
+              </Button>
+            </Link>
+            <Link to="/pricing">
+              <Button size="lg" variant="outline" className="text-lg px-8 text-gray-300 border-gray-600 hover:border-blue-400">
+                See all plans
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 

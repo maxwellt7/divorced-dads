@@ -20,6 +20,7 @@ import tasksRoutes from './routes/tasks.routes.js';
 import progressRoutes from './routes/progress.routes.js';
 import dailyTaskRoutes from './routes/daily-task.routes.js';
 import chatRoutes from './routes/chat.routes.js';
+import stripeRoutes from './routes/stripe.routes.js';
 
 const app = express();
 
@@ -44,7 +45,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Body parsing middleware
+// Stripe webhook must be registered BEFORE global json middleware
+// (needs raw body to verify signature)
+app.use('/api/stripe', stripeRoutes);
+
+// Body parsing middleware (after Stripe webhook)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -53,8 +58,8 @@ app.use(loggerMiddleware);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });

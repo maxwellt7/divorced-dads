@@ -17,6 +17,9 @@ import JourneyDetail from './pages/JourneyDetail';
 import Profile from './pages/Profile';
 import Stats from './pages/Stats';
 import Settings from './pages/Settings';
+import Pricing from './pages/Pricing';
+import SubscribeSuccess from './pages/SubscribeSuccess';
+import SubscribeCancel from './pages/SubscribeCancel';
 
 // Protected Route Component
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -53,6 +56,9 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/subscribe/success" element={<SubscribeSuccess />} />
+        <Route path="/subscribe/cancel" element={<SubscribeCancel />} />
 
         {/* Protected routes */}
         <Route
