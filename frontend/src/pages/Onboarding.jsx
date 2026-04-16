@@ -1,333 +1,252 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useProfileStore } from '../store/profileStore';
-import { useAuthStore } from '../store/authStore';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { saveOnboarding } from '../services/curriculum.service';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { track, Events } from '../utils/analytics';
 
-const questions = [
-  {
-    id: 'primary_goal',
-    label: 'What is your primary goal for using hypnosis?',
-    type: 'select',
-    options: [
-      'Stress & Anxiety Relief',
-      'Build Confidence & Self-Esteem',
-      'Improve Sleep Quality',
-      'Weight Loss & Healthy Habits',
-      'Overcome Fears & Phobias',
-      'Quit Smoking/Bad Habits',
-      'Improve Focus & Performance',
-      'Pain Management',
-      'Other'
-    ]
-  },
-  {
-    id: 'experience_level',
-    label: 'Have you experienced hypnosis or meditation before?',
-    type: 'select',
-    options: ['Never', 'A few times', 'Regularly', 'Daily practice']
-  },
-  {
-    id: 'preferred_time',
-    label: 'When do you prefer to listen to hypnosis sessions?',
-    type: 'select',
-    options: ['Morning', 'Afternoon', 'Evening', 'Before bed', 'Flexible']
-  },
-  {
-    id: 'session_duration',
-    label: 'How long should your typical session be?',
-    type: 'select',
-    options: ['5-10 minutes', '15-20 minutes', '30-45 minutes', '45+ minutes']
-  },
-  {
-    id: 'specific_challenges',
-    label: 'Describe any specific challenges you\'d like to address',
-    type: 'textarea',
-    placeholder: 'E.g., I struggle with public speaking anxiety...'
-  },
-  {
-    id: 'desired_outcome',
-    label: 'What would success look like for you in 30 days?',
-    type: 'textarea',
-    placeholder: 'E.g., I would feel calm and confident in social situations...'
-  },
-  {
-    id: 'voice_preference',
-    label: 'What type of voice do you prefer?',
-    type: 'select',
-    options: ['Calm & Soothing', 'Warm & Friendly', 'Confident & Authoritative', 'Gentle & Soft', 'No preference']
-  },
-  {
-    id: 'background_sounds',
-    label: 'Do you prefer background music or sounds?',
-    type: 'select',
-    options: ['Nature sounds', 'Soft music', 'Binaural beats', 'Silence', 'No preference']
-  },
-  {
-    id: 'stress_level',
-    label: 'On a scale of 1-10, what is your current stress level?',
-    type: 'select',
-    options: ['1 - Very Low', '2', '3', '4', '5 - Moderate', '6', '7', '8', '9', '10 - Very High']
-  },
-  {
-    id: 'sleep_quality',
-    label: 'How would you rate your sleep quality?',
-    type: 'select',
-    options: ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent']
-  },
-  {
-    id: 'past_trauma',
-    label: 'Are there any past experiences that still affect you today?',
-    type: 'textarea',
-    placeholder: 'Optional - share only if comfortable...',
-    optional: true
-  },
-  {
-    id: 'current_medications',
-    label: 'Are you currently taking any medications or under medical care?',
-    type: 'select',
-    options: ['No', 'Yes - Physical health', 'Yes - Mental health', 'Yes - Both', 'Prefer not to say']
-  },
-  {
-    id: 'commitment_level',
-    label: 'How many days per week can you commit to sessions?',
-    type: 'select',
-    options: ['1-2 days', '3-4 days', '5-6 days', 'Every day']
-  },
-  {
-    id: 'motivational_style',
-    label: 'What motivates you most?',
-    type: 'select',
-    options: ['Positive reinforcement', 'Practical results', 'Emotional connection', 'Scientific evidence', 'All of the above']
-  },
-  {
-    id: 'relaxation_level',
-    label: 'How easily do you relax?',
-    type: 'select',
-    options: ['Very difficult', 'Somewhat difficult', 'Neutral', 'Somewhat easy', 'Very easy']
-  },
-  {
-    id: 'visualization_ability',
-    label: 'How well can you visualize scenarios in your mind?',
-    type: 'select',
-    options: ['Not at all', 'With difficulty', 'Moderately well', 'Very well', 'Extremely vivid']
-  },
-  {
-    id: 'personal_values',
-    label: 'What matters most to you in life?',
-    type: 'textarea',
-    placeholder: 'E.g., Family, health, career, creativity, freedom...'
-  },
-  {
-    id: 'biggest_obstacle',
-    label: 'What\'s the biggest obstacle preventing you from reaching your goals?',
-    type: 'textarea',
-    placeholder: 'Be honest with yourself...'
-  },
-  {
-    id: 'support_system',
-    label: 'Do you have a support system?',
-    type: 'select',
-    options: ['Strong support system', 'Some support', 'Limited support', 'No support', 'Prefer not to say']
-  },
-  {
-    id: 'additional_info',
-    label: 'Anything else you\'d like us to know?',
-    type: 'textarea',
-    placeholder: 'Optional - any additional context that might help personalize your experience...',
-    optional: true
-  }
+const DIVORCE_STAGES = [
+  'Pre-separation',
+  'Separation/Filing',
+  'Finalized - 0-1 year',
+  'Finalized - 1-3 years',
+  'Finalized - 3+ years',
 ];
+
+const KIDS_AGES = [
+  'Under 5',
+  '5-10',
+  '11-15',
+  '16-18',
+  'Over 18',
+];
+
+const CHALLENGES = [
+  'Managing emotions',
+  'Co-parenting conflict',
+  'Financial stress',
+  'Loneliness/isolation',
+  'Finding purpose',
+  'Building new relationships',
+  'All of the above',
+];
+
+const TOTAL_STEPS = 3;
+
+function OptionButton({ selected, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full text-left px-4 py-3.5 rounded-xl border-2 font-medium transition-all duration-150 text-sm ${
+        selected
+          ? 'border-violet-600 bg-violet-50 text-violet-700'
+          : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { completeOnboarding } = useProfileStore();
-  const { updateUser } = useAuthStore();
+  const [step, setStep] = useState(0);
+  const [divorceStage, setDivorceStage] = useState('');
+  const [hasKids, setHasKids] = useState(null); // null | true | false
+  const [kidsAges, setKidsAges] = useState([]);
+  const [biggestChallenge, setBiggestChallenge] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [responses, setResponses] = useState({});
 
-  const questionsPerPage = 5;
-  const totalPages = Math.ceil(questions.length / questionsPerPage);
-  const currentQuestions = questions.slice(
-    currentStep * questionsPerPage,
-    (currentStep + 1) * questionsPerPage
-  );
+  const progressPct = Math.round(((step + 1) / TOTAL_STEPS) * 100);
 
-  const handleChange = (questionId, value) => {
-    setResponses({ ...responses, [questionId]: value });
+  const toggleKidsAge = (age) => {
+    setKidsAges((prev) =>
+      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
+    );
   };
 
   const canGoNext = () => {
-    return currentQuestions.every(q => {
-      if (q.optional) return true;
-      return responses[q.id] && responses[q.id].trim() !== '';
-    });
+    if (step === 0) return !!divorceStage;
+    if (step === 1) return hasKids !== null && (hasKids === false || kidsAges.length > 0);
+    if (step === 2) return !!biggestChallenge;
+    return false;
   };
 
   const handleNext = () => {
-    if (currentStep < totalPages - 1) {
-      track(Events.ONBOARDING_STEP, { step: currentStep + 1, total_steps: totalPages });
-      setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    if (step < TOTAL_STEPS - 1) setStep(step + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    if (step > 0) setStep(step - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canGoNext()) {
-      toast.error('Please answer all required questions');
-      return;
-    }
-
+  const handleSubmit = async () => {
+    if (!canGoNext()) return;
     setIsLoading(true);
-
     try {
-      const profile = await completeOnboarding({ responses });
-
-      // Update user in auth store with new profile
-      updateUser((prev) => ({ ...prev, profile }));
-
-      track(Events.ONBOARDING_COMPLETE, {
-        primary_goal: responses.primary_goal,
-        experience_level: responses.experience_level,
+      await saveOnboarding({
+        divorceStage,
+        hasKids,
+        kidsAges: hasKids ? kidsAges : [],
+        biggestChallenge,
       });
-
-      toast.success('Profile created! Let\'s create your first journey.');
-      navigate('/create-journey');
+      toast.success("Welcome! Your journey starts now.");
+      navigate('/dashboard');
     } catch (error) {
-      toast.error(error.message || 'Failed to complete onboarding');
+      toast.error(error.message || 'Failed to save. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12 px-6">
-      <div className="container mx-auto max-w-3xl">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-gray-50 py-10 px-4">
+      <div className="max-w-lg mx-auto">
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to Divorced Dads</h1>
+          <p className="text-gray-500 mt-1">Let's personalize your experience.</p>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mb-6 space-y-1">
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>Step {step + 1} of {TOTAL_STEPS}</span>
+            <span>{progressPct}% complete</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-violet-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+        </div>
+
         <Card>
           <CardHeader>
-            <CardTitle>Welcome! Let's Personalize Your Experience</CardTitle>
-            <p className="text-gray-600">
-              Answer these questions to help us create the perfect hypnosis journeys for you
-            </p>
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">
-                  Step {currentStep + 1} of {totalPages}
-                </span>
-                <span className="text-sm text-gray-600">
-                  {Math.round(((currentStep + 1) / totalPages) * 100)}% Complete
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-primary-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${((currentStep + 1) / totalPages) * 100}%` }}
-                />
-              </div>
-            </div>
+            {step === 0 && (
+              <CardTitle className="text-lg">What stage of divorce are you in?</CardTitle>
+            )}
+            {step === 1 && (
+              <CardTitle className="text-lg">Do you have kids?</CardTitle>
+            )}
+            {step === 2 && (
+              <CardTitle className="text-lg">What's your biggest challenge right now?</CardTitle>
+            )}
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {currentQuestions.map((question, idx) => (
-                <div key={question.id} className="space-y-2">
-                  <label className="block text-sm font-medium">
-                    {idx + 1 + currentStep * questionsPerPage}. {question.label}
-                    {question.optional && (
-                      <span className="text-gray-400 ml-2">(Optional)</span>
-                    )}
-                  </label>
-                  
-                  {question.type === 'select' && (
-                    <select
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      value={responses[question.id] || ''}
-                      onChange={(e) => handleChange(question.id, e.target.value)}
-                      required={!question.optional}
-                    >
-                      <option value="">Select an option...</option>
-                      {question.options.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  )}
 
-                  {question.type === 'textarea' && (
-                    <textarea
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[100px]"
-                      placeholder={question.placeholder}
-                      value={responses[question.id] || ''}
-                      onChange={(e) => handleChange(question.id, e.target.value)}
-                      required={!question.optional}
-                    />
-                  )}
+          <CardContent className="space-y-3">
+            {/* Step 0: Divorce stage */}
+            {step === 0 && (
+              <div className="space-y-2">
+                {DIVORCE_STAGES.map((stage) => (
+                  <OptionButton
+                    key={stage}
+                    selected={divorceStage === stage}
+                    onClick={() => setDivorceStage(stage)}
+                  >
+                    {stage}
+                  </OptionButton>
+                ))}
+              </div>
+            )}
 
-                  {question.type === 'text' && (
-                    <Input
-                      placeholder={question.placeholder}
-                      value={responses[question.id] || ''}
-                      onChange={(e) => handleChange(question.id, e.target.value)}
-                      required={!question.optional}
-                    />
-                  )}
+            {/* Step 1: Kids */}
+            {step === 1 && (
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <OptionButton
+                    selected={hasKids === true}
+                    onClick={() => setHasKids(true)}
+                  >
+                    Yes
+                  </OptionButton>
+                  <OptionButton
+                    selected={hasKids === false}
+                    onClick={() => { setHasKids(false); setKidsAges([]); }}
+                  >
+                    No
+                  </OptionButton>
                 </div>
-              ))}
 
-              <div className="flex gap-4 pt-6">
-                {currentStep > 0 && (
-                  <Button
-                    type="button"
-                    onClick={handleBack}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ChevronLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
-                )}
-
-                {currentStep < totalPages - 1 ? (
-                  <Button
-                    type="button"
-                    onClick={handleNext}
-                    variant="gradient"
-                    className="flex-1"
-                    disabled={!canGoNext()}
-                  >
-                    Next
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    variant="gradient"
-                    className="flex-1"
-                    disabled={isLoading || !canGoNext()}
-                  >
-                    {isLoading ? 'Completing...' : 'Complete & Continue'}
-                  </Button>
+                {hasKids === true && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ages of your kids (select all that apply)</p>
+                    {KIDS_AGES.map((age) => (
+                      <OptionButton
+                        key={age}
+                        selected={kidsAges.includes(age)}
+                        onClick={() => toggleKidsAge(age)}
+                      >
+                        {age}
+                      </OptionButton>
+                    ))}
+                  </div>
                 )}
               </div>
-            </form>
+            )}
+
+            {/* Step 2: Biggest challenge */}
+            {step === 2 && (
+              <div className="space-y-2">
+                {CHALLENGES.map((challenge) => (
+                  <OptionButton
+                    key={challenge}
+                    selected={biggestChallenge === challenge}
+                    onClick={() => setBiggestChallenge(challenge)}
+                  >
+                    {challenge}
+                  </OptionButton>
+                ))}
+              </div>
+            )}
+
+            {/* Navigation */}
+            <div className="flex gap-3 pt-4">
+              {step > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleBack}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Back
+                </Button>
+              )}
+
+              {step < TOTAL_STEPS - 1 ? (
+                <Button
+                  type="button"
+                  className="flex-1"
+                  onClick={handleNext}
+                  disabled={!canGoNext()}
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="flex-1"
+                  onClick={handleSubmit}
+                  disabled={!canGoNext() || isLoading}
+                >
+                  {isLoading ? 'Saving…' : 'Get Started'}
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
+
+        <p className="text-center text-xs text-gray-400 mt-6">
+          You've got this. Every day forward counts.
+        </p>
       </div>
     </div>
   );
 }
-

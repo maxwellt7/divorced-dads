@@ -19,6 +19,7 @@ import curriculumRoutes from './routes/curriculum.routes.js';
 import tasksRoutes from './routes/tasks.routes.js';
 import progressRoutes from './routes/progress.routes.js';
 import dailyTaskRoutes from './routes/daily-task.routes.js';
+import chatRoutes from './routes/chat.routes.js';
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use('/api/curriculum', curriculumRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/daily-task', dailyTaskRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

@@ -1,22 +1,60 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { useJourneyStore } from '../store/journeyStore';
+import { useCurriculumStore } from '../store/curriculumStore';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { Plus, Sparkles, TrendingUp, Calendar } from 'lucide-react';
+import ProgressRing from '../components/curriculum/ProgressRing';
+import WeekProgressBar from '../components/curriculum/WeekProgressBar';
+import { Flame, ArrowRight, BookOpen } from 'lucide-react';
+
+const phaseConfig = {
+  power: {
+    label: 'Power',
+    color: 'bg-violet-100 text-violet-700 border-violet-200',
+    highlight: 'border-violet-500 bg-violet-50',
+    ring: '#7c3aed',
+    description: 'Reclaim your identity and strength',
+  },
+  purpose: {
+    label: 'Purpose',
+    color: 'bg-blue-100 text-blue-700 border-blue-200',
+    highlight: 'border-blue-500 bg-blue-50',
+    ring: '#2563eb',
+    description: 'Define your values and direction',
+  },
+  protection: {
+    label: 'Protection',
+    color: 'bg-green-100 text-green-700 border-green-200',
+    highlight: 'border-green-500 bg-green-50',
+    ring: '#16a34a',
+    description: 'Protect what matters most',
+  },
+  profit: {
+    label: 'Profit',
+    color: 'bg-amber-100 text-amber-700 border-amber-200',
+    highlight: 'border-amber-500 bg-amber-50',
+    ring: '#d97706',
+    description: 'Build financial stability',
+  },
+};
+
+const allPhases = ['power', 'purpose', 'protection', 'profit'];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const { journeys, fetchJourneys, isLoading } = useJourneyStore();
-  const [stats, setStats] = useState(null);
+  const { progress, dailyTask, currentWeek, isLoading, fetchProgress, fetchDailyTask } =
+    useCurriculumStore();
 
   useEffect(() => {
-    fetchJourneys();
-  }, [fetchJourneys]);
+    fetchProgress();
+    fetchDailyTask();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (isLoading) {
+  if (isLoading && !progress) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -24,123 +62,141 @@ export default function Dashboard() {
     );
   }
 
+  const currentWeekNum = progress?.current_week ?? 1;
+  const currentDay = progress?.current_day ?? 1;
+  const streakDays = progress?.streak_days ?? 0;
+  const overallProgress = Math.round(((currentWeekNum - 1) / 16) * 100);
+  const phase = currentWeek?.phase?.toLowerCase() || 'power';
+  const phaseInfo = phaseConfig[phase] || phaseConfig.power;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="h-6 w-6 text-primary-600" />
-            <span className="text-xl font-bold gradient-text">Divorced Dads</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link to="/dashboard/stats">
-              <Button variant="ghost">Stats</Button>
-            </Link>
+      <header className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="px-4 py-4 flex items-center justify-between max-w-2xl mx-auto">
+          <span className="text-xl font-bold text-violet-700">Divorced Dads</span>
+          <div className="flex items-center gap-1">
             <Link to="/dashboard/profile">
-              <Button variant="ghost">Profile</Button>
+              <Button variant="ghost" size="sm">Profile</Button>
             </Link>
-            <Button variant="ghost" onClick={logout}>
+            <Link to="/dashboard/settings">
+              <Button variant="ghost" size="sm">Settings</Button>
+            </Link>
+            <Button variant="ghost" size="sm" onClick={logout}>
               Logout
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
-          <p className="text-gray-600">Ready to continue your transformation journey?</p>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Active Journeys</CardTitle>
-              <Calendar className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{journeys.filter(j => j.status === 'ready').length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Journeys</CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{journeys.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Streak</CardTitle>
-              <span className="text-2xl">🔥</span>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0 days</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Create Journey CTA */}
-        <div className="mb-8">
-          <Link to="/create-journey">
-            <Button size="lg" variant="gradient" className="w-full md:w-auto">
-              <Plus className="h-5 w-5 mr-2" />
-              Create New Journey
-            </Button>
-          </Link>
-        </div>
-
-        {/* Journeys List */}
+      <div className="px-4 py-6 max-w-2xl mx-auto space-y-5">
+        {/* Welcome */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Your Journeys</h2>
-          {journeys.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-gray-500 mb-4">No journeys yet. Create your first one!</p>
-                <Link to="/create-journey">
-                  <Button variant="gradient">Get Started</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-6">
-              {journeys.map((journey) => (
-                <Link key={journey.id} to={`/dashboard/journey/${journey.id}`}>
-                  <Card className="card-hover cursor-pointer">
-                    <CardHeader>
-                      <CardTitle>{journey.goal}</CardTitle>
-                      <p className="text-sm text-gray-600">{journey.intention}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <span className={`px-3 py-1 rounded-full text-sm ${
-                          journey.status === 'ready' ? 'bg-green-100 text-green-700' :
-                          journey.status === 'creating' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {journey.status}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {journey.journey_days?.filter(d => d.completed).length || 0}/7 days
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+          <h1 className="text-2xl font-bold text-gray-900">
+            Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+          </h1>
+          <p className="text-gray-500 text-sm mt-0.5">Keep showing up. You're doing great.</p>
+        </div>
+
+        {/* Streak card */}
+        <Card className="border border-orange-200 bg-orange-50">
+          <CardContent className="py-4 px-4 flex items-center gap-3">
+            <Flame className="w-8 h-8 text-orange-500 shrink-0" />
+            <div>
+              <p className="text-2xl font-bold text-orange-700">{streakDays} day{streakDays !== 1 ? 's' : ''}</p>
+              <p className="text-sm text-orange-600">Current streak</p>
             </div>
-          )}
+          </CardContent>
+        </Card>
+
+        {/* Current week card */}
+        <Card className={`border-2 ${phaseInfo.highlight}`}>
+          <CardContent className="py-5 px-4 flex items-center gap-4">
+            <ProgressRing
+              progress={overallProgress}
+              size={90}
+              strokeWidth={8}
+              color={phaseInfo.ring}
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border capitalize ${phaseInfo.color}`}>
+                  {phaseInfo.label} Phase
+                </span>
+              </div>
+              <h2 className="text-lg font-bold text-gray-900">Week {currentWeekNum}</h2>
+              {currentWeek?.theme && (
+                <p className="text-sm text-gray-600 truncate">{currentWeek.theme}</p>
+              )}
+              <p className="text-xs text-gray-400 mt-0.5">{overallProgress}% of program complete</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Week progress bar */}
+        <Card>
+          <CardContent className="py-4 px-4">
+            <WeekProgressBar currentWeek={currentWeekNum} currentDay={currentDay} />
+          </CardContent>
+        </Card>
+
+        {/* Daily task card */}
+        <Card>
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-violet-600" />
+              Today's Task
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4 space-y-3">
+            {dailyTask ? (
+              <>
+                <p className="font-semibold text-gray-900">{dailyTask.title}</p>
+                {dailyTask.description && (
+                  <p className="text-sm text-gray-600 line-clamp-3">{dailyTask.description}</p>
+                )}
+                <Button
+                  size="lg"
+                  className="w-full mt-1"
+                  onClick={() => navigate('/daily-task')}
+                >
+                  Start Today's Task
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </>
+            ) : (
+              <p className="text-gray-500 text-sm">No task found for today.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Phase overview */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Program Phases</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {allPhases.map((p) => {
+              const cfg = phaseConfig[p];
+              const isCurrent = p === phase;
+              return (
+                <div
+                  key={p}
+                  className={`rounded-xl border p-3 transition-all ${
+                    isCurrent ? `border-2 ${cfg.highlight}` : 'border-gray-200 bg-white'
+                  }`}
+                >
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border capitalize ${cfg.color}`}>
+                    {cfg.label}
+                  </span>
+                  <p className="text-xs text-gray-500 mt-1.5 leading-snug">{cfg.description}</p>
+                  {isCurrent && (
+                    <p className="text-xs font-medium text-violet-600 mt-1">Current</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

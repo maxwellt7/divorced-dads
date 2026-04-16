@@ -12,6 +12,7 @@ import Onboarding from './pages/Onboarding';
 import CreateJourney from './pages/CreateJourney';
 import JourneyCreating from './pages/JourneyCreating';
 import Dashboard from './pages/Dashboard';
+import DailyTask from './pages/DailyTask';
 import JourneyDetail from './pages/JourneyDetail';
 import Profile from './pages/Profile';
 import Stats from './pages/Stats';
@@ -83,6 +84,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/daily-task"
+          element={
+            <ProtectedRoute>
+              <DailyTask />
             </ProtectedRoute>
           }
         />
