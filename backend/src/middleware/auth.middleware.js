@@ -1,22 +1,18 @@
 import jwt from 'jsonwebtoken';
 import { AuthenticationError, AuthorizationError } from '../utils/errors.js';
-import { supabase } from '../config/supabase.js';
+import { db } from '../config/database.js';
 
 export const authenticate = async (req, res, next) => {
   try {
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new AuthenticationError('No token provided');
     }
 
     const token = authHeader.replace('Bearer ', '');
-
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user info to request
     req.userId = decoded.userId;
     req.userEmail = decoded.email;
 
@@ -34,23 +30,15 @@ export const authenticate = async (req, res, next) => {
 
 export const requireAdmin = async (req, res, next) => {
   try {
-    if (!supabase) {
-      throw new AuthenticationError('Database not configured');
-    }
-    // Check if user is admin
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('is_admin')
-      .eq('id', req.userId)
-      .single();
+    if (!db) throw new AuthenticationError('Database not configured');
 
-    if (error) {
-      throw new AuthenticationError('User not found');
-    }
+    const [[user]] = await db.execute(
+      'SELECT is_admin FROM users WHERE id = ?',
+      [req.userId]
+    );
 
-    if (!user.is_admin) {
-      throw new AuthorizationError('Admin access required');
-    }
+    if (!user) throw new AuthenticationError('User not found');
+    if (!user.is_admin) throw new AuthorizationError('Admin access required');
 
     next();
   } catch (error) {
@@ -58,11 +46,10 @@ export const requireAdmin = async (req, res, next) => {
   }
 };
 
-// Optional authentication - doesn't fail if no token
 export const optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.replace('Bearer ', '');
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -71,9 +58,7 @@ export const optionalAuth = async (req, res, next) => {
     }
 
     next();
-  } catch (error) {
-    // Don't fail, just continue without auth
+  } catch {
     next();
   }
 };
-

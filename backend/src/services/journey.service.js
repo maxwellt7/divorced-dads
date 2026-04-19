@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js';
+import { db } from '../config/database.js';
 import { n8nService } from './n8n.service.js';
 import { pineconeService } from './pinecone.service.js';
 import { logger } from '../utils/logger.js';
@@ -7,214 +7,145 @@ import { JOURNEY_STATUS } from '../utils/constants.js';
 
 export class JourneyService {
   async createJourney(userId, journeyData) {
-    try {
-      // Create journey record
-      const { data: journey, error } = await supabase
-        .from('journeys')
-        .insert({
-          user_id: userId,
-          goal: journeyData.goal,
-          intention: journeyData.intention,
-          status: JOURNEY_STATUS.CREATING,
-          journey_data: {
-            duration: journeyData.duration || 15,
-            preferences: journeyData.preferences || {},
-          },
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Get user profile for context
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      // Get user information from Pinecone
-      const userContext = await pineconeService.searchUserInformation(
+    const journeyId = (await db.execute(
+      `INSERT INTO journeys (id, user_id, goal, intention, status, journey_data)
+       VALUES (UUID(), ?, ?, ?, ?, ?)`,
+      [
         userId,
-        `${journeyData.goal} ${journeyData.intention}`,
-        5
-      );
+        journeyData.goal,
+        journeyData.intention,
+        JOURNEY_STATUS.CREATING,
+        JSON.stringify({ duration: journeyData.duration || 15, preferences: journeyData.preferences || {} }),
+      ]
+    ))[0].insertId;
 
-      // Trigger n8n workflow for journey generation
-      await n8nService.triggerJourneyCreation({
-        journeyId: journey.id,
-        userId,
-        goal: journeyData.goal,
-        intention: journeyData.intention,
-        duration: journeyData.duration || profile?.preference_duration || 15,
-        userProfile: profile,
-        userContext: userContext?.map(m => m.metadata) || [],
-      });
+    const [[journey]] = await db.execute(
+      'SELECT * FROM journeys WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+      [userId]
+    );
 
-      logger.info(`Journey created: ${journey.id} for user: ${userId}`);
-      return journey;
-    } catch (error) {
-      logger.error('Error creating journey:', error);
-      throw error;
-    }
+    const [[profile]] = await db.execute(
+      'SELECT * FROM profiles WHERE user_id = ?',
+      [userId]
+    );
+
+    const userContext = await pineconeService.searchUserInformation(
+      userId,
+      `${journeyData.goal} ${journeyData.intention}`,
+      5
+    );
+
+    await n8nService.triggerJourneyCreation({
+      journeyId: journey.id,
+      userId,
+      goal: journeyData.goal,
+      intention: journeyData.intention,
+      duration: journeyData.duration || profile?.preference_duration || 15,
+      userProfile: profile,
+      userContext: userContext?.map(m => m.metadata) || [],
+    });
+
+    logger.info(`Journey created: ${journey.id} for user: ${userId}`);
+    return journey;
   }
 
   async getJourney(journeyId, userId) {
-    try {
-      const { data, error } = await supabase
-        .from('journeys')
-        .select(`
-          *,
-          journey_days (
-            id,
-            day_number,
-            title,
-            description,
-            audio_url,
-            duration_seconds,
-            completed,
-            completed_at,
-            created_at
-          )
-        `)
-        .eq('id', journeyId)
-        .single();
+    const [[journey]] = await db.execute(
+      'SELECT * FROM journeys WHERE id = ?',
+      [journeyId]
+    );
+    if (!journey) throw new NotFoundError('Journey');
+    if (journey.user_id !== userId) throw new AuthorizationError();
 
-      if (error) throw new NotFoundError('Journey');
+    const [days] = await db.execute(
+      `SELECT id, day_number, title, description, audio_url, duration_seconds, completed, completed_at, created_at
+       FROM journey_days WHERE journey_id = ? ORDER BY day_number`,
+      [journeyId]
+    );
 
-      // Verify ownership
-      if (data.user_id !== userId) {
-        throw new AuthorizationError();
-      }
-
-      // Sort days by day_number
-      if (data.journey_days) {
-        data.journey_days.sort((a, b) => a.day_number - b.day_number);
-      }
-
-      return data;
-    } catch (error) {
-      logger.error('Error getting journey:', error);
-      throw error;
+    if (journey.journey_data && typeof journey.journey_data === 'string') {
+      journey.journey_data = JSON.parse(journey.journey_data);
     }
+
+    return { ...journey, journey_days: days };
   }
 
   async listJourneys(userId, options = {}) {
-    try {
-      let query = supabase
-        .from('journeys')
-        .select(`
-          *,
-          journey_days (
-            id,
-            day_number,
-            completed
-          )
-        `)
-        .eq('user_id', userId);
+    let sql = 'SELECT * FROM journeys WHERE user_id = ?';
+    const params = [userId];
 
-      // Apply filters
-      if (options.status) {
-        query = query.eq('status', options.status);
-      }
-
-      // Apply sorting
-      query = query.order('created_at', { ascending: false });
-
-      // Apply pagination
-      if (options.limit) {
-        query = query.limit(options.limit);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      logger.error('Error listing journeys:', error);
-      throw error;
+    if (options.status) {
+      sql += ' AND status = ?';
+      params.push(options.status);
     }
+
+    sql += ' ORDER BY created_at DESC';
+
+    if (options.limit) {
+      sql += ' LIMIT ?';
+      params.push(options.limit);
+    }
+
+    const [journeys] = await db.execute(sql, params);
+
+    for (const j of journeys) {
+      if (j.journey_data && typeof j.journey_data === 'string') {
+        j.journey_data = JSON.parse(j.journey_data);
+      }
+      const [days] = await db.execute(
+        'SELECT id, day_number, completed FROM journey_days WHERE journey_id = ?',
+        [j.id]
+      );
+      j.journey_days = days;
+    }
+
+    return journeys;
   }
 
   async getJourneyDay(journeyId, dayNumber, userId) {
-    try {
-      // First verify journey ownership
-      const { data: journey } = await supabase
-        .from('journeys')
-        .select('user_id')
-        .eq('id', journeyId)
-        .single();
+    const [[journey]] = await db.execute(
+      'SELECT user_id FROM journeys WHERE id = ?',
+      [journeyId]
+    );
+    if (!journey || journey.user_id !== userId) throw new AuthorizationError();
 
-      if (!journey || journey.user_id !== userId) {
-        throw new AuthorizationError();
-      }
+    const [[day]] = await db.execute(
+      'SELECT * FROM journey_days WHERE journey_id = ? AND day_number = ?',
+      [journeyId, dayNumber]
+    );
+    if (!day) throw new NotFoundError('Journey day');
 
-      // Get the specific day
-      const { data, error } = await supabase
-        .from('journey_days')
-        .select('*')
-        .eq('journey_id', journeyId)
-        .eq('day_number', dayNumber)
-        .single();
-
-      if (error) throw new NotFoundError('Journey day');
-
-      return data;
-    } catch (error) {
-      logger.error('Error getting journey day:', error);
-      throw error;
-    }
+    return day;
   }
 
   async markDayComplete(journeyId, dayNumber, userId) {
-    try {
-      // Verify journey ownership
-      const { data: journey } = await supabase
-        .from('journeys')
-        .select('user_id')
-        .eq('id', journeyId)
-        .single();
+    const [[journey]] = await db.execute(
+      'SELECT user_id FROM journeys WHERE id = ?',
+      [journeyId]
+    );
+    if (!journey || journey.user_id !== userId) throw new AuthorizationError();
 
-      if (!journey || journey.user_id !== userId) {
-        throw new AuthorizationError();
-      }
+    const [[day]] = await db.execute(
+      'SELECT * FROM journey_days WHERE journey_id = ? AND day_number = ?',
+      [journeyId, dayNumber]
+    );
+    if (!day) throw new NotFoundError('Journey day');
 
-      // Get the day
-      const { data: day, error: dayError } = await supabase
-        .from('journey_days')
-        .select('*')
-        .eq('journey_id', journeyId)
-        .eq('day_number', dayNumber)
-        .single();
+    await db.execute(
+      'UPDATE journey_days SET completed = 1, completed_at = NOW() WHERE id = ?',
+      [day.id]
+    );
 
-      if (dayError) throw new NotFoundError('Journey day');
+    await this.updateUserStats(userId, day.duration_seconds || 0);
+    await this.checkJourneyCompletion(journeyId);
 
-      // Mark as complete
-      const { data: updated, error } = await supabase
-        .from('journey_days')
-        .update({
-          completed: true,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', day.id)
-        .select()
-        .single();
+    const [[updated]] = await db.execute(
+      'SELECT * FROM journey_days WHERE id = ?',
+      [day.id]
+    );
 
-      if (error) throw error;
-
-      // Update user stats
-      await this.updateUserStats(userId, day.duration_seconds || 0);
-
-      // Check if journey is complete
-      await this.checkJourneyCompletion(journeyId);
-
-      logger.info(`Day ${dayNumber} marked complete for journey: ${journeyId}`);
-      return updated;
-    } catch (error) {
-      logger.error('Error marking day complete:', error);
-      throw error;
-    }
+    logger.info(`Day ${dayNumber} marked complete for journey: ${journeyId}`);
+    return updated;
   }
 
   async updateUserStats(userId, durationSeconds) {
@@ -222,81 +153,52 @@ export class JourneyService {
       const durationMinutes = Math.floor(durationSeconds / 60);
       const today = new Date().toISOString().split('T')[0];
 
-      // Get current stats
-      const { data: stats } = await supabase
-        .from('user_stats')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
+      const [[stats]] = await db.execute(
+        'SELECT current_streak, longest_streak, last_session_date, total_minutes_listened, total_sessions FROM user_stats WHERE user_id = ?',
+        [userId]
+      );
       if (!stats) return;
 
-      // Calculate streak
       let newStreak = stats.current_streak;
-      const lastSession = stats.last_session_date;
-
-      if (lastSession) {
-        const lastDate = new Date(lastSession);
-        const todayDate = new Date(today);
-        const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) {
-          // Same day, no change to streak
-        } else if (diffDays === 1) {
-          // Consecutive day, increment streak
-          newStreak += 1;
-        } else {
-          // Streak broken, reset
-          newStreak = 1;
-        }
+      if (stats.last_session_date) {
+        const diffDays = Math.floor(
+          (new Date(today) - new Date(stats.last_session_date)) / (1000 * 60 * 60 * 24)
+        );
+        if (diffDays === 1) newStreak += 1;
+        else if (diffDays > 1) newStreak = 1;
       } else {
         newStreak = 1;
       }
 
-      const longestStreak = Math.max(stats.longest_streak, newStreak);
-
-      // Update stats
-      await supabase
-        .from('user_stats')
-        .update({
-          current_streak: newStreak,
-          longest_streak: longestStreak,
-          total_minutes_listened: stats.total_minutes_listened + durationMinutes,
-          total_sessions: stats.total_sessions + 1,
-          last_session_date: today,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', userId);
+      await db.execute(
+        `UPDATE user_stats SET
+          current_streak = ?, longest_streak = ?,
+          total_minutes_listened = total_minutes_listened + ?,
+          total_sessions = total_sessions + 1,
+          last_session_date = ?
+         WHERE user_id = ?`,
+        [newStreak, Math.max(stats.longest_streak, newStreak), durationMinutes, today, userId]
+      );
 
       logger.info(`Stats updated for user: ${userId}`);
     } catch (error) {
       logger.error('Error updating user stats:', error);
-      // Don't throw - stats update shouldn't fail the main operation
     }
   }
 
   async checkJourneyCompletion(journeyId) {
     try {
-      // Get all days for the journey
-      const { data: days } = await supabase
-        .from('journey_days')
-        .select('completed')
-        .eq('journey_id', journeyId);
+      const [days] = await db.execute(
+        'SELECT completed FROM journey_days WHERE journey_id = ?',
+        [journeyId]
+      );
+      if (!days.length) return;
 
-      if (!days || days.length === 0) return;
-
-      // Check if all days are completed
-      const allComplete = days.every(day => day.completed);
-
-      if (allComplete) {
-        await supabase
-          .from('journeys')
-          .update({
-            status: JOURNEY_STATUS.COMPLETED,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', journeyId);
-
+      if (days.every(d => d.completed)) {
+        await db.execute(
+          "UPDATE journeys SET status = ? WHERE id = ?",
+          [JOURNEY_STATUS.COMPLETED, journeyId]
+        );
         logger.info(`Journey completed: ${journeyId}`);
       }
     } catch (error) {
@@ -305,34 +207,16 @@ export class JourneyService {
   }
 
   async deleteJourney(journeyId, userId) {
-    try {
-      // Verify ownership
-      const { data: journey } = await supabase
-        .from('journeys')
-        .select('user_id')
-        .eq('id', journeyId)
-        .single();
+    const [[journey]] = await db.execute(
+      'SELECT user_id FROM journeys WHERE id = ?',
+      [journeyId]
+    );
+    if (!journey || journey.user_id !== userId) throw new AuthorizationError();
 
-      if (!journey || journey.user_id !== userId) {
-        throw new AuthorizationError();
-      }
-
-      // Delete journey (cascade will delete journey_days)
-      const { error } = await supabase
-        .from('journeys')
-        .delete()
-        .eq('id', journeyId);
-
-      if (error) throw error;
-
-      logger.info(`Journey deleted: ${journeyId}`);
-    } catch (error) {
-      logger.error('Error deleting journey:', error);
-      throw error;
-    }
+    await db.execute('DELETE FROM journeys WHERE id = ?', [journeyId]);
+    logger.info(`Journey deleted: ${journeyId}`);
   }
 }
 
 export const journeyService = new JourneyService();
 export default journeyService;
-

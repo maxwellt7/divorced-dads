@@ -1,60 +1,68 @@
-import supabase from '../config/supabase.js';
+import { db } from '../config/database.js';
 import { logger } from '../utils/logger.js';
 
 const PROGRAM_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
+function parseProgress(progress) {
+  if (!progress) return progress;
+  if (typeof progress.completed_task_ids === 'string') {
+    progress.completed_task_ids = JSON.parse(progress.completed_task_ids);
+  }
+  if (typeof progress.onboarding_data === 'string') {
+    progress.onboarding_data = JSON.parse(progress.onboarding_data);
+  }
+  return progress;
+}
+
 export const progressController = {
-  // GET /api/progress — get or create user's progress record
   async get(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
 
-      let { data, error } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('program_id', PROGRAM_ID)
-        .single();
+      let [[progress]] = await db.execute(
+        'SELECT * FROM user_progress WHERE user_id = ? AND program_id = ?',
+        [userId, PROGRAM_ID]
+      );
 
-      if (error && error.code === 'PGRST116') {
-        // No record yet — create it
-        const { data: created, error: cErr } = await supabase
-          .from('user_progress')
-          .insert({ user_id: userId, program_id: PROGRAM_ID })
-          .select()
-          .single();
-
-        if (cErr) throw cErr;
-        return res.json(created);
+      if (!progress) {
+        await db.execute(
+          'INSERT IGNORE INTO user_progress (id, user_id, program_id) VALUES (UUID(), ?, ?)',
+          [userId, PROGRAM_ID]
+        );
+        [[progress]] = await db.execute(
+          'SELECT * FROM user_progress WHERE user_id = ? AND program_id = ?',
+          [userId, PROGRAM_ID]
+        );
       }
 
-      if (error) throw error;
-      res.json(data);
+      res.json(parseProgress(progress));
     } catch (err) {
       next(err);
     }
   },
 
-  // POST /api/progress/complete-task — mark a task done, advance position
   async completeTask(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const { taskId, weekNumber, dayNumber } = req.body;
 
       if (!taskId || !weekNumber || !dayNumber) {
         return res.status(400).json({ error: 'taskId, weekNumber, and dayNumber are required' });
       }
 
-      const { data: progress, error: pErr } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('program_id', PROGRAM_ID)
-        .single();
+      const [[progress]] = await db.execute(
+        'SELECT * FROM user_progress WHERE user_id = ? AND program_id = ?',
+        [userId, PROGRAM_ID]
+      );
 
-      if (pErr) throw pErr;
+      if (!progress) {
+        return res.status(404).json({ error: 'Progress record not found' });
+      }
 
-      // Don't allow completing tasks ahead of current position
+      const completedTaskIds = typeof progress.completed_task_ids === 'string'
+        ? JSON.parse(progress.completed_task_ids)
+        : (progress.completed_task_ids || []);
+
       const isCurrentOrBehind =
         weekNumber < progress.current_week ||
         (weekNumber === progress.current_week && dayNumber <= progress.current_day);
@@ -63,12 +71,10 @@ export const progressController = {
         return res.status(403).json({ error: 'Cannot complete tasks ahead of your current position' });
       }
 
-      // Already completed?
-      if (progress.completed_task_ids.includes(taskId)) {
-        return res.json({ progress, alreadyCompleted: true });
+      if (completedTaskIds.includes(taskId)) {
+        return res.json({ progress: { ...progress, completed_task_ids: completedTaskIds }, alreadyCompleted: true });
       }
 
-      // Calculate next position
       let nextWeek = progress.current_week;
       let nextDay = progress.current_day;
 
@@ -81,60 +87,61 @@ export const progressController = {
         }
       }
 
-      // Update streak
       const now = new Date();
       const lastCompleted = progress.last_completed_at ? new Date(progress.last_completed_at) : null;
-      const oneDayMs = 86400000;
       let streak = progress.streak_days;
 
       if (lastCompleted) {
-        const diffMs = now - lastCompleted;
-        if (diffMs < oneDayMs * 2) {
-          streak += 1;
-        } else {
-          streak = 1;
-        }
+        streak = (now - lastCompleted) < 86400000 * 2 ? streak + 1 : 1;
       } else {
         streak = 1;
       }
 
-      const { data: updated, error: uErr } = await supabase
-        .from('user_progress')
-        .update({
-          current_week: nextWeek,
-          current_day: nextDay,
-          streak_days: streak,
-          last_completed_at: now.toISOString(),
-          completed_task_ids: [...progress.completed_task_ids, taskId],
-          completed_at: nextWeek === 16 && nextDay === 7 ? now.toISOString() : null,
-        })
-        .eq('user_id', userId)
-        .eq('program_id', PROGRAM_ID)
-        .select()
-        .single();
+      const newCompletedTaskIds = [...completedTaskIds, taskId];
+      const programCompleted = nextWeek === 16 && nextDay === 7;
 
-      if (uErr) throw uErr;
+      await db.execute(
+        `UPDATE user_progress SET
+          current_week = ?, current_day = ?, streak_days = ?,
+          last_completed_at = ?, completed_task_ids = ?, completed_at = ?
+        WHERE user_id = ? AND program_id = ?`,
+        [nextWeek, nextDay, streak, now, JSON.stringify(newCompletedTaskIds),
+         programCompleted ? now : null, userId, PROGRAM_ID]
+      );
 
-      res.json({ progress: updated, weekCompleted: dayNumber === 7, programCompleted: nextWeek === 16 && nextDay === 7 });
+      const [[updated]] = await db.execute(
+        'SELECT * FROM user_progress WHERE user_id = ? AND program_id = ?',
+        [userId, PROGRAM_ID]
+      );
+
+      res.json({
+        progress: { ...updated, completed_task_ids: newCompletedTaskIds },
+        weekCompleted: dayNumber === 7,
+        programCompleted,
+      });
     } catch (err) {
       next(err);
     }
   },
 
-  // PATCH /api/progress/onboarding — save onboarding answers
   async saveOnboarding(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const { onboardingData } = req.body;
 
-      const { data, error } = await supabase
-        .from('user_progress')
-        .upsert({ user_id: userId, program_id: PROGRAM_ID, onboarding_data: onboardingData })
-        .select()
-        .single();
+      await db.execute(
+        `INSERT INTO user_progress (id, user_id, program_id, onboarding_data)
+         VALUES (UUID(), ?, ?, ?)
+         ON DUPLICATE KEY UPDATE onboarding_data = VALUES(onboarding_data)`,
+        [userId, PROGRAM_ID, JSON.stringify(onboardingData)]
+      );
 
-      if (error) throw error;
-      res.json(data);
+      const [[updated]] = await db.execute(
+        'SELECT * FROM user_progress WHERE user_id = ? AND program_id = ?',
+        [userId, PROGRAM_ID]
+      );
+
+      res.json(parseProgress(updated));
     } catch (err) {
       next(err);
     }

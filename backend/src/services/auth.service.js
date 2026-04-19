@@ -1,215 +1,90 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../config/supabase.js';
+import { db } from '../config/database.js';
 import { AuthenticationError, ConflictError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 
 export class AuthService {
   async register({ email, password, name, phone }) {
-    try {
-      // Check if user already exists
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('email', email)
-        .single();
+    const [existing] = await db.execute(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
+    if (existing.length > 0) throw new ConflictError('User with this email already exists');
 
-      if (existingUser) {
-        throw new ConflictError('User with this email already exists');
-      }
+    const passwordHash = await bcrypt.hash(password, 10);
 
-      // Hash password
-      const passwordHash = await bcrypt.hash(password, 10);
+    await db.execute(
+      'INSERT INTO users (id, email, password_hash, name, phone) VALUES (UUID(), ?, ?, ?, ?)',
+      [email, passwordHash, name || null, phone || null]
+    );
 
-      // Create user
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .insert({
-          email,
-          password_hash: passwordHash,
-          name,
-          phone,
-        })
-        .select()
-        .single();
+    const [[user]] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
 
-      if (userError) throw userError;
+    await db.execute('INSERT INTO profiles (id, user_id) VALUES (UUID(), ?)', [user.id]);
+    await db.execute('INSERT INTO user_stats (id, user_id) VALUES (UUID(), ?)', [user.id]);
 
-      // Create profile
-      await supabase
-        .from('profiles')
-        .insert({ user_id: user.id });
+    const [[profile]] = await db.execute('SELECT * FROM profiles WHERE user_id = ?', [user.id]);
 
-      // Create user stats
-      await supabase
-        .from('user_stats')
-        .insert({ user_id: user.id });
+    const token = this.generateToken(user);
+    logger.info(`User registered: ${user.email}`);
 
-      // Get the created profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      // Generate JWT token
-      const token = this.generateToken(user);
-
-      logger.info(`User registered: ${user.email}`);
-
-      return {
-        user: {
-          ...this.sanitizeUser(user),
-          profile: profile || null,
-        },
-        token,
-      };
-    } catch (error) {
-      logger.error('Registration error:', error);
-      throw error;
-    }
+    return { user: { ...this.sanitizeUser(user), profile: profile || null }, token };
   }
 
   async login({ email, password }) {
-    try {
-      // Get user by email
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', email)
-        .single();
+    const [[user]] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
 
-      if (error || !user) {
-        throw new AuthenticationError('Invalid email or password');
-      }
+    if (!user) throw new AuthenticationError('Invalid email or password');
 
-      // Verify password
-      const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-      
-      if (!isPasswordValid) {
-        throw new AuthenticationError('Invalid email or password');
-      }
+    const isValid = await bcrypt.compare(password, user.password_hash);
+    if (!isValid) throw new AuthenticationError('Invalid email or password');
 
-      // Get profile data
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+    await db.execute(
+      'UPDATE user_stats SET total_sessions = total_sessions + 1, last_active_at = NOW() WHERE user_id = ?',
+      [user.id]
+    );
 
-      // Generate JWT token
-      const token = this.generateToken(user);
+    const [[profile]] = await db.execute('SELECT * FROM profiles WHERE user_id = ?', [user.id]);
+    const token = this.generateToken(user);
+    logger.info(`User logged in: ${user.email}`);
 
-      logger.info(`User logged in: ${user.email}`);
-
-      return {
-        user: {
-          ...this.sanitizeUser(user),
-          profile: profile || null,
-        },
-        token,
-      };
-    } catch (error) {
-      logger.error('Login error:', error);
-      throw error;
-    }
+    return { user: { ...this.sanitizeUser(user), profile: profile || null }, token };
   }
 
   async getMe(userId) {
-    try {
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+    const [[user]] = await db.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    if (!user) throw new AuthenticationError('User not found');
 
-      if (error || !user) {
-        throw new AuthenticationError('User not found');
-      }
+    const [[profile]] = await db.execute('SELECT * FROM profiles WHERE user_id = ?', [userId]);
+    const [[stats]] = await db.execute('SELECT * FROM user_stats WHERE user_id = ?', [userId]);
 
-      // Get profile data
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      return {
-        ...this.sanitizeUser(user),
-        profile: profile || null,
-      };
-    } catch (error) {
-      logger.error('Get user error:', error);
-      throw error;
-    }
+    return { ...this.sanitizeUser(user), profile: profile || null, stats: stats || null };
   }
 
   async changePassword(userId, currentPassword, newPassword) {
-    try {
-      // Get user
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('password_hash')
-        .eq('id', userId)
-        .single();
+    const [[user]] = await db.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    if (!user) throw new AuthenticationError('User not found');
 
-      if (error || !user) {
-        throw new AuthenticationError('User not found');
-      }
+    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isValid) throw new AuthenticationError('Current password is incorrect');
 
-      // Verify current password
-      const isPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
-      
-      if (!isPasswordValid) {
-        throw new AuthenticationError('Current password is incorrect');
-      }
-
-      // Hash new password
-      const newPasswordHash = await bcrypt.hash(newPassword, 10);
-
-      // Update password
-      await supabase
-        .from('users')
-        .update({ password_hash: newPasswordHash })
-        .eq('id', userId);
-
-      logger.info(`Password changed for user: ${userId}`);
-
-      return { success: true };
-    } catch (error) {
-      logger.error('Change password error:', error);
-      throw error;
-    }
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await db.execute('UPDATE users SET password_hash = ? WHERE id = ?', [newHash, userId]);
   }
 
   generateToken(user) {
     return jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        isAdmin: user.is_admin || false,
-      },
+      { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-      }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
   }
 
-  verifyToken(token) {
-    try {
-      return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      throw new AuthenticationError('Invalid token');
-    }
-  }
-
   sanitizeUser(user) {
-    const { password_hash, ...sanitizedUser } = user;
-    return sanitizedUser;
+    const { password_hash, ...safe } = user;
+    return safe;
   }
 }
 
 export const authService = new AuthService();
-export default authService;
-

@@ -1,99 +1,63 @@
-import { supabase } from '../config/supabase.js';
+import { db } from '../config/database.js';
 import { pineconeService } from './pinecone.service.js';
 import { logger } from '../utils/logger.js';
 import { NotFoundError } from '../utils/errors.js';
 
 export class ProfileService {
   async getProfile(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) throw new NotFoundError('Profile');
-
-      return data;
-    } catch (error) {
-      logger.error('Error getting profile:', error);
-      throw error;
-    }
+    const [[data]] = await db.execute(
+      'SELECT * FROM profiles WHERE user_id = ?',
+      [userId]
+    );
+    if (!data) throw new NotFoundError('Profile');
+    return data;
   }
 
   async updateProfile(userId, updates) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', userId)
-        .select()
-        .single();
+    const allowed = ['display_name', 'bio', 'avatar_url', 'timezone', 'notification_preferences'];
+    const fields = Object.keys(updates).filter(k => allowed.includes(k));
+    if (fields.length === 0) return this.getProfile(userId);
 
-      if (error) throw error;
+    const sets = fields.map(f => `${f} = ?`).join(', ');
+    const values = fields.map(f => updates[f]);
 
-      logger.info(`Profile updated for user: ${userId}`);
-      return data;
-    } catch (error) {
-      logger.error('Error updating profile:', error);
-      throw error;
-    }
+    await db.execute(
+      `UPDATE profiles SET ${sets} WHERE user_id = ?`,
+      [...values, userId]
+    );
+
+    logger.info(`Profile updated for user: ${userId}`);
+    return this.getProfile(userId);
   }
 
   async completeOnboarding(userId, onboardingData) {
-    try {
-      // Update profile with onboarding data
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          onboarding_completed: true,
-          onboarding_data: onboardingData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', userId)
-        .select()
-        .single();
+    await db.execute(
+      `UPDATE profiles SET onboarding_completed = 1, onboarding_data = ? WHERE user_id = ?`,
+      [JSON.stringify(onboardingData), userId]
+    );
 
-      if (error) throw error;
+    await pineconeService.upsertUserInformation(userId, {
+      type: 'onboarding',
+      data: onboardingData,
+      metadata: { completed_at: new Date().toISOString() },
+    });
 
-      // Store onboarding data in Pinecone for semantic search
-      await pineconeService.upsertUserInformation(userId, {
-        type: 'onboarding',
-        data: onboardingData,
-        metadata: {
-          completed_at: new Date().toISOString(),
-        },
-      });
-
-      logger.info(`Onboarding completed for user: ${userId}`);
-      return data;
-    } catch (error) {
-      logger.error('Error completing onboarding:', error);
-      throw error;
-    }
+    logger.info(`Onboarding completed for user: ${userId}`);
+    return this.getProfile(userId);
   }
 
   async getOnboardingData(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('onboarding_data, onboarding_completed')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      logger.error('Error getting onboarding data:', error);
-      throw error;
+    const [[data]] = await db.execute(
+      'SELECT onboarding_data, onboarding_completed FROM profiles WHERE user_id = ?',
+      [userId]
+    );
+    if (!data) throw new NotFoundError('Profile');
+    if (data.onboarding_data && typeof data.onboarding_data === 'string') {
+      data.onboarding_data = JSON.parse(data.onboarding_data);
     }
+    return data;
   }
 }
 
 export const profileService = new ProfileService();
 export default profileService;
-

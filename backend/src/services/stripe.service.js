@@ -1,46 +1,31 @@
 import { stripe } from '../config/stripe.js';
-import { supabase } from '../config/supabase.js';
+import { db } from '../config/database.js';
 import { logger } from '../utils/logger.js';
 import { AppError } from '../utils/errors.js';
 
 export class StripeService {
-  /**
-   * Get or create a Stripe customer for a user.
-   */
   async getOrCreateCustomer(userId, email) {
-    // Check if subscription row already exists
-    const { data: existing } = await supabase
-      .from('subscriptions')
-      .select('stripe_customer_id')
-      .eq('user_id', userId)
-      .single();
+    const [[existing]] = await db.execute(
+      'SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?',
+      [userId]
+    );
 
     if (existing?.stripe_customer_id) {
       return existing.stripe_customer_id;
     }
 
-    // Create new Stripe customer
-    const customer = await stripe.customers.create({
-      email,
-      metadata: { userId },
-    });
+    const customer = await stripe.customers.create({ email, metadata: { userId } });
 
-    // Upsert subscription row with customer id (free plan until checkout completes)
-    await supabase
-      .from('subscriptions')
-      .upsert({
-        user_id: userId,
-        stripe_customer_id: customer.id,
-        plan: 'free',
-        status: 'inactive',
-      }, { onConflict: 'user_id' });
+    await db.execute(
+      `INSERT INTO subscriptions (id, user_id, stripe_customer_id, plan_type, status)
+       VALUES (UUID(), ?, ?, 'monthly', 'inactive')
+       ON DUPLICATE KEY UPDATE stripe_customer_id = VALUES(stripe_customer_id)`,
+      [userId, customer.id]
+    );
 
     return customer.id;
   }
 
-  /**
-   * Create a Stripe Checkout session for a subscription or one-time payment.
-   */
   async createCheckoutSession({ userId, email, priceId, successUrl, cancelUrl }) {
     if (!stripe) throw new AppError('Stripe not configured', 503);
 
@@ -63,17 +48,13 @@ export class StripeService {
     return session;
   }
 
-  /**
-   * Create a Stripe Customer Portal session.
-   */
   async createPortalSession({ userId, returnUrl }) {
     if (!stripe) throw new AppError('Stripe not configured', 503);
 
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('stripe_customer_id')
-      .eq('user_id', userId)
-      .single();
+    const [[sub]] = await db.execute(
+      'SELECT stripe_customer_id FROM subscriptions WHERE user_id = ?',
+      [userId]
+    );
 
     if (!sub?.stripe_customer_id) {
       throw new AppError('No billing account found', 404);
@@ -87,27 +68,22 @@ export class StripeService {
     return session;
   }
 
-  /**
-   * Get a user's current subscription status.
-   */
   async getSubscriptionStatus(userId) {
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('plan, status, current_period_end, cancel_at_period_end')
-      .eq('user_id', userId)
-      .single();
+    const [[sub]] = await db.execute(
+      'SELECT plan_type, status, current_period_end, cancel_at_period_end FROM subscriptions WHERE user_id = ?',
+      [userId]
+    );
 
     if (!sub) {
       return { plan: 'free', status: 'inactive', hasFullAccess: false };
     }
 
     const hasFullAccess =
-      (sub.plan === 'monthly' && sub.status === 'active') ||
-      (sub.plan === 'monthly' && sub.status === 'trialing') ||
-      sub.plan === 'lifetime';
+      (sub.plan_type === 'monthly' && (sub.status === 'active' || sub.status === 'trialing')) ||
+      sub.plan_type === 'lifetime';
 
     return {
-      plan: sub.plan,
+      plan: sub.plan_type,
       status: sub.status,
       currentPeriodEnd: sub.current_period_end,
       cancelAtPeriodEnd: sub.cancel_at_period_end,
@@ -115,9 +91,6 @@ export class StripeService {
     };
   }
 
-  /**
-   * Handle incoming Stripe webhook events.
-   */
   async handleWebhookEvent(rawBody, signature) {
     if (!stripe) throw new AppError('Stripe not configured', 503);
 
@@ -138,20 +111,16 @@ export class StripeService {
       case 'checkout.session.completed':
         await this._handleCheckoutCompleted(event.data.object);
         break;
-
       case 'customer.subscription.updated':
       case 'customer.subscription.created':
         await this._handleSubscriptionUpdated(event.data.object);
         break;
-
       case 'customer.subscription.deleted':
         await this._handleSubscriptionDeleted(event.data.object);
         break;
-
       case 'invoice.payment_failed':
         await this._handlePaymentFailed(event.data.object);
         break;
-
       default:
         logger.info(`Unhandled Stripe event type: ${event.type}`);
     }
@@ -163,20 +132,15 @@ export class StripeService {
     const userId = session.metadata?.userId;
     if (!userId) return;
 
-    // For one-time lifetime purchases
     if (session.mode === 'payment') {
-      await supabase
-        .from('subscriptions')
-        .upsert({
-          user_id: userId,
-          stripe_customer_id: session.customer,
-          plan: 'lifetime',
-          status: 'active',
-        }, { onConflict: 'user_id' });
-
+      await db.execute(
+        `INSERT INTO subscriptions (id, user_id, stripe_customer_id, plan_type, status)
+         VALUES (UUID(), ?, ?, 'lifetime', 'active')
+         ON DUPLICATE KEY UPDATE stripe_customer_id = VALUES(stripe_customer_id), plan_type = 'lifetime', status = 'active'`,
+        [userId, session.customer]
+      );
       logger.info(`Lifetime purchase completed for user ${userId}`);
     }
-    // Subscription checkout — full update comes via subscription.updated event
   }
 
   async _handleSubscriptionUpdated(subscription) {
@@ -184,21 +148,34 @@ export class StripeService {
     if (!userId) return;
 
     const status = this._mapStripeStatus(subscription.status);
-    const plan = status === 'active' || status === 'trialing' ? 'monthly' : 'free';
+    const planType = (status === 'active' || status === 'trialing') ? 'monthly' : 'monthly';
 
-    await supabase
-      .from('subscriptions')
-      .upsert({
-        user_id: userId,
-        stripe_customer_id: subscription.customer,
-        stripe_subscription_id: subscription.id,
-        stripe_price_id: subscription.items?.data?.[0]?.price?.id,
-        plan,
+    await db.execute(
+      `INSERT INTO subscriptions
+         (id, user_id, stripe_customer_id, stripe_subscription_id, stripe_price_id,
+          plan_type, status, current_period_start, current_period_end, cancel_at_period_end)
+       VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         stripe_customer_id = VALUES(stripe_customer_id),
+         stripe_subscription_id = VALUES(stripe_subscription_id),
+         stripe_price_id = VALUES(stripe_price_id),
+         plan_type = VALUES(plan_type),
+         status = VALUES(status),
+         current_period_start = VALUES(current_period_start),
+         current_period_end = VALUES(current_period_end),
+         cancel_at_period_end = VALUES(cancel_at_period_end)`,
+      [
+        userId,
+        subscription.customer,
+        subscription.id,
+        subscription.items?.data?.[0]?.price?.id || null,
+        planType,
         status,
-        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-        cancel_at_period_end: subscription.cancel_at_period_end,
-      }, { onConflict: 'user_id' });
+        new Date(subscription.current_period_start * 1000),
+        new Date(subscription.current_period_end * 1000),
+        subscription.cancel_at_period_end ? 1 : 0,
+      ]
+    );
 
     logger.info(`Subscription updated for user ${userId}: ${status}`);
   }
@@ -207,10 +184,11 @@ export class StripeService {
     const userId = subscription.metadata?.userId;
     if (!userId) return;
 
-    await supabase
-      .from('subscriptions')
-      .update({ plan: 'free', status: 'canceled', cancel_at_period_end: false })
-      .eq('user_id', userId);
+    await db.execute(
+      `UPDATE subscriptions SET plan_type = 'monthly', status = 'canceled', cancel_at_period_end = 0
+       WHERE user_id = ?`,
+      [userId]
+    );
 
     logger.info(`Subscription canceled for user ${userId}`);
   }
@@ -219,10 +197,10 @@ export class StripeService {
     const customerId = invoice.customer;
     if (!customerId) return;
 
-    await supabase
-      .from('subscriptions')
-      .update({ status: 'past_due' })
-      .eq('stripe_customer_id', customerId);
+    await db.execute(
+      "UPDATE subscriptions SET status = 'past_due' WHERE stripe_customer_id = ?",
+      [customerId]
+    );
 
     logger.warn(`Payment failed for customer ${customerId}`);
   }
