@@ -24,6 +24,9 @@ import stripeRoutes from './routes/stripe.routes.js';
 
 const app = express();
 
+// Trust Railway/Heroku reverse proxy so rate-limiter reads the real client IP
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
