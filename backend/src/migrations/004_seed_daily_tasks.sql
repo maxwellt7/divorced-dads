@@ -15,7 +15,7 @@ This inventory isn''t a verdict. It''s a map. The men who make the biggest trans
        'Where is the gap largest? What would a 10 in that area look and feel like?',
        'Help the user explore their inventory honestly. Ask follow-up questions about the area with the widest gap. Do not offer solutions yet — this week is about awareness. Be warm but grounded.', 1
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 2 (Week 1, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -28,7 +28,7 @@ Letters like this have a way of unlocking something that logic can''t reach. Thi
        'What did you write that surprised you? What do you want your kids to feel when they think of you during this time?',
        'Ask the user what it felt like to write the letter. Explore themes of love, fear, and commitment. Help them articulate the kind of dad they''re reaching toward. Be compassionate and unhurried.', 2
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 3 (Week 1, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -41,7 +41,7 @@ If your inner circle is empty or thin, that''s the most important thing you lear
        'Who is actually in your corner right now? Where are the holes in your village?',
        'Help the user map their support network. If they identify isolation, normalize it without letting them stay there. Gently push toward identifying one relationship they could invest in. Be practical and warm.', 3
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 4 (Week 1, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -54,7 +54,7 @@ This north star doesn''t have to be perfect — it just has to be yours. Write i
        'Read your north star out loud. How does it feel in your body? What would have to change about your daily life to align with it?',
        'Help the user craft or refine their north star vision. Ask sensory questions — what does it look like, sound like, feel like. Help them connect the vision to today''s choices. Be energizing and forward-focused.', 4
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 5 (Week 1, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -67,7 +67,7 @@ Say it out loud tomorrow morning before you touch your phone. Do it for seven da
        'What five things do you most need to remind yourself of right now? Which one feels most challenging to believe?',
        'Help the user craft their personal morning statement. Push back gently if they write things they clearly don''t believe — work toward statements that stretch without snapping. Help them find the words that land in the body, not just the head.', 5
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 6 (Week 1, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -80,7 +80,7 @@ You are the fulcrum point in your family lineage. What you heal and what you cho
        'What is the single most important pattern from your father''s parenting that you want to transform in your own?',
        'Be sensitive — this exercise can surface old wounds. Hold space without rushing. Ask clarifying questions about what "doing it differently" looks like in practical day-to-day moments. Be compassionate and grounding.', 6
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 7 (Week 1, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -93,7 +93,7 @@ Today you write your Week 1 Declaration — one paragraph that captures what you
        'What was the hardest moment this week? What surprised you most about yourself?',
        'Celebrate the completion of Week 1 genuinely. Help the user synthesize the week''s themes into a clear declaration. Ask what they''re taking into Week 2. Be affirming and integrative.', 7
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 1
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 8 (Week 2, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -106,7 +106,7 @@ The goal this week isn''t therapy. It''s recognition. When you know what that bo
        'What do you feel when you look at that boy? What did he most need that he may not have fully received?',
        'Be extremely gentle here. Some men have trauma in this territory. Move slowly, affirm courage. Ask what the boy in the photo believed about himself, about love, about being a man. Create safety above all.', 8
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 9 (Week 2, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -119,7 +119,7 @@ Awareness is the beginning of choice. You can''t change what you can''t see.',
        'What belief about yourself, about love, or about safety did you form as a kid that still operates in your parenting today?',
        'Help the user draw clear connections between past experience and present behavior. Be a curious, non-judgmental guide. If they surface something heavy, slow down and honor it. Don''t rush toward solutions — this is about seeing clearly.', 9
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 10 (Week 2, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -132,7 +132,7 @@ This exercise is not sentimental — it''s neurological. When you give compassio
        'What did you most want to say to him? What was hardest to write?',
        'Ask what it felt like to write the letter. Help the user notice how showing compassion to their younger self feels different from their normal internal self-talk. Bridge to how this changes how they might show up for their own kids.', 10
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 11 (Week 2, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -145,7 +145,7 @@ The story you choose determines the man you become.',
        'What story are you telling yourself about the divorce? Is that story empowering you or keeping you stuck?',
        'Help the user examine their divorce narrative without judgment. Gently challenge victim or villain frameworks and help them find a more empowering story — not a false one, but a true one that centers growth and agency. Be tactful and grounded.', 11
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 12 (Week 2, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -158,7 +158,7 @@ Naming the wound is not weakness. It is the first act of healing it — and of e
        'In one sentence, what is your father wound? What would it mean for your children if you healed it?',
        'Hold this with great care. Some users will have significant pain here. Be a steady, compassionate presence. Help them see the connection between healing their own wound and breaking the generational pattern. Honor courage.', 12
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 13 (Week 2, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -171,7 +171,7 @@ This isn''t about regret — it''s about integration. When you can be compassion
        'What is the most important thing you would say to that version of yourself? What does that tell you about what you value now?',
        'Help the user move from regret toward wisdom. If they focus on failures, gently redirect to what those failures taught them and what they''d want their past self to know. Help them harvest learning from pain.', 13
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 14 (Week 2, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -184,7 +184,7 @@ Write your Week 2 Declaration: what you''re choosing to believe about yourself a
        'What is the most significant thing you learned about yourself this week? How does it change how you want to show up for your kids?',
        'Integrate and affirm. Celebrate the courage of the week. Help the user land on one clear belief shift they''re making. Connect it forward to what''s possible as they build the life and fatherhood they''re reaching for.', 14
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 2
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 15 (Week 3, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -197,7 +197,7 @@ Design a 20–30 minute morning that works for your actual life, including custo
        'What does your morning currently look like? What is one thing you could add or subtract to make it more powerful?',
        'Be practical and realistic. Help the user build a morning routine they can actually sustain. Ask about custody schedule to tailor the advice. Celebrate any version of intentional morning practice — perfect is the enemy of good here.', 15
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 16 (Week 3, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -210,7 +210,7 @@ The ice bath is a metaphor for everything this program asks of you: voluntary di
        'What was your first cold exposure experience like? What showed up in your mind when the cold hit?',
        'Ask about the user''s experience with cold exposure. If they haven''t tried it yet, encourage them warmly. Explore the mental experience — what thoughts arise, how they handle discomfort. Connect the practice to their capacity for resilience as a dad.', 16
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 17 (Week 3, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -223,7 +223,7 @@ An energized dad is a present dad. This is a daily practice, not a one-time fix.
        'What are the biggest energy drains in your current life? What gives you energy? How can you shift the ratio?',
        'Help the user think practically about energy management — not abstract wellness advice but real-life scheduling. Ask about their biggest energy drains and help them identify one thing to protect or eliminate. Be grounded and tactical.', 17
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 18 (Week 3, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -236,7 +236,7 @@ Presence is not a feeling — it''s a decision you enforce with boundaries. Your
        'Honestly track your phone usage today. When does it pull you away from your kids or yourself? What boundary would make the biggest difference?',
        'Don''t shame — explore. Ask what the user uses their phone for during dad-time. Help them identify specific, achievable phone boundaries. Connect presence with their north star vision of fatherhood. Be encouraging and practical.', 18
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 19 (Week 3, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -249,7 +249,7 @@ Schedule it right now. Block it on your calendar. Treat it as a non-negotiable, 
        'How are you currently using movement to regulate your mental and emotional state? What would change if you moved every day without exception?',
        'Meet the user where they are physically. No judgment about fitness level. Help them identify a form of movement they actually enjoy and can sustain. Connect physical regulation to emotional availability for their kids. Be energizing.', 19
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 20 (Week 3, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -262,7 +262,7 @@ Even fifteen intentional minutes at the end of the day can transform your sleep 
        'How do you currently end your day? What emotion do you carry into sleep? What would a 10/10 evening ritual look like for you?',
        'Help the user design an evening ritual that actually fits their life. If kids are present, adapt accordingly. Ask about current evening habits without judgment. Help them identify one small change that could make a meaningful difference. Be practical and warm.', 20
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 21 (Week 3, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -275,7 +275,7 @@ Write your Week 3 Declaration and share it with one person who can hold you acco
        'Which part of your new routine has had the biggest impact in just one week? What would your life look like in 90 days if you held these habits?',
        'Celebrate what was built. Help the user see the cumulative effect of small daily practices. Troubleshoot any pieces that aren''t sticking. Help them identify their accountability partner. Be affirming and forward-looking.', 21
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 3
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 22 (Week 4, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -288,7 +288,7 @@ Naming is not complaining. It is the first step toward expanding your capacity t
        'What is the heaviest thing on your list? What would it mean to hold it with more grace — not to stop feeling it, but to carry it without being crushed?',
        'Create deep safety for this. Some of what surfaces may be grief that has never had an outlet. Listen fully before suggesting anything. Normalize the weight. Help the user distinguish between what can be changed and what must simply be held with more grace.', 22
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 23 (Week 4, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -301,7 +301,7 @@ Emotional range is not weakness. It is a leadership skill. The dad who can name 
        'What emotion did you most avoid expressing in your marriage? What would it look like to allow yourself to feel it fully and safely?',
        'Teach gently. Don''t lecture — ask questions that draw out emotional specificity. If the user deflects with humor or analysis, gently return to feeling. This is a practice, not a performance. Be patient.', 23
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 24 (Week 4, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -314,7 +314,7 @@ This practice, done for five minutes daily, has measurable effects on cortisol l
        'What did you notice in your body during the breathwork? When during your typical day do you most need a tool like this?',
        'Walk the user through a brief breathwork practice in the chat itself. Ask what they noticed. Help them identify three daily trigger moments where breath could interrupt their reactive pattern. Make it practical and immediate.', 24
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 25 (Week 4, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -327,7 +327,7 @@ Language creates reality. When you have words for what you feel, you have power 
        'Which emotions are hardest for you to name or admit? Why do you think that is?',
        'Explore the user''s emotional vocabulary with curiosity. Ask about the emotions they identified. Help them connect specific life situations to specific emotions. Celebrate any nuance — this is more important than it sounds.', 25
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 26 (Week 4, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -340,7 +340,7 @@ Anger properly metabolized becomes fuel. Anger unexamined becomes a weapon. You 
        'What are the top three things you''re angry about right now? What is the healthy core need underneath each one?',
        'Create safety for anger to be expressed without judgment. Help the user move below the anger to the unmet needs beneath it (usually: fairness, respect, love, safety). Be steady and direct. Do not try to take the anger away — help them understand and channel it.', 26
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 27 (Week 4, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -353,7 +353,7 @@ The dad who can hold space for his kids'' pain is the dad they come to with ever
        'How does it feel when your kids express difficult emotions? What urge do you have to fix, explain, or shut it down? Where does that urge come from?',
        'Help the user practice the holding-space skill in the chat itself. Role-play a scenario if they''re willing. Ask what it''s like to hold space vs. to problem-solve. Connect this to their long-term vision of the relationship they want with their kids.', 27
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 28 (Week 4, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -366,7 +366,7 @@ Tomorrow you enter the Purpose phase, where the work becomes about building a li
        'What is the single biggest shift in you over the past four weeks? What are you most proud of?',
        'Celebrate fully. This is a real milestone. Help the user articulate the specific growth they''ve experienced. Look forward to Purpose phase with energy and momentum. This is a transition — honor it.', 28
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 4
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 29 (Week 5, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -379,7 +379,7 @@ Taking care of your body is not selfish. It is a fatherhood responsibility.',
        'What is the one physical health habit that, if you implemented it consistently for 90 days, would have the biggest impact on your energy and presence?',
        'Be a health partner, not a trainer. Ask about current habits without judgment. Help the user prioritize — don''t try to fix everything at once. Identify the highest-leverage habit change and help them commit to it specifically. Be practical and encouraging.', 29
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 30 (Week 5, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -392,7 +392,7 @@ You cannot outwork bad sleep. You cannot out-supplement, out-meditate, or out-co
        'On your last great night of sleep — what did the day before look like? What can you replicate?',
        'Ask specifically about sleep challenges. If co-parenting anxiety is disrupting sleep, explore that. Help the user build a realistic sleep protocol. Be practical — this is one of the highest-ROI changes a struggling dad can make.', 30
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 31 (Week 5, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -405,7 +405,7 @@ Food is information. It tells your body whether it''s safe and resourced, or dep
        'What eating patterns from the divorce period are you most concerned about? What is the single most important nutrition habit you want to establish?',
        'Non-judgmental exploration of current eating. Help the user identify practical, sustainable changes — not a total overhaul. If alcohol is a concern, handle it with care and directness. Connect nutrition to energy and emotional availability for kids.', 31
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 32 (Week 5, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -418,7 +418,7 @@ A vital, energized dad is the dad your kids need. This is biology in service of 
        'On a scale of 1-10, how vital do you feel physically right now? What three lifestyle factors, if improved, would most restore your vitality?',
        'Handle sensitively — some men may feel shame about this topic. Normalize the biology while pointing to agency. Focus on lifestyle factors they can control. If they mention symptoms that suggest they should see a doctor, gently encourage that step.', 32
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 33 (Week 5, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -431,7 +431,7 @@ The practices you''ve been building this program — movement, cold, breath — 
        'When have you used physical activity to process an emotion and noticed it shift? What physical practice most reliably changes your state?',
        'Help the user make explicit the connection they may have felt but not named between physical practices and emotional state. Explore their personal "state-change" toolkit. Reinforce that this is not just self-care — it''s a fatherhood tool.', 33
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 34 (Week 5, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -444,7 +444,7 @@ Your kids need to see you pursue hard things. Not because you talk about it — 
        'What physical goal, if you accomplished it in the next 90 days, would make you feel most proud and most like the man you''re becoming?',
        'Help the user identify a goal that is genuinely challenging but achievable. Ask what goal would make them proud — not what seems reasonable. Connect the goal to their kids watching them do hard things. Help them define the first step they can take this week.', 34
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 35 (Week 5, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -457,7 +457,7 @@ Write your Body Blueprint — one page that captures your commitments in each ar
        'If you held your body blueprint for the next 90 days, what would be different about your life?',
        'Synthesize the week''s work. Help the user consolidate their commitments into clear, specific actions. Celebrate the week. Ask what accountability structure they need to sustain this. Be affirming and practical.', 35
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 5
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 36 (Week 6, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -470,7 +470,7 @@ When you know who you are at the core — separate from your roles — you can s
        'Who are you when no one is watching and nothing is required? What do you love about that person?',
        'Help the user explore their authentic self beneath their roles. If they can''t access it immediately, ask about childhood passions, things that make them lose track of time, what lights them up before the world gets hold of them. Be curious and unhurried.', 36
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 37 (Week 6, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -483,7 +483,7 @@ A values-aligned life feels different from one built on obligation and fear. Thi
        'What is the value you most clearly live? What is the value you most often compromise — and at what cost?',
        'Help the user identify their actual values through behavior evidence, not stated ideals. Ask clarifying questions: "What do your choices show you value, even when it''s uncomfortable?" Connect core values to their north star vision of fatherhood.', 37
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 38 (Week 6, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -496,7 +496,7 @@ Kids can smell inauthenticity. They relax when they''re with someone real. Be th
        'Where do you feel most authentically yourself as a dad? Where do you feel most like you''re performing? What''s the difference?',
        'Explore the gap between performed and authentic fatherhood. Help the user identify specific moments where they could let down the performance. Normalize that authentic connection — including saying "I don''t know" — actually strengthens the relationship with kids.', 38
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 39 (Week 6, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -509,7 +509,7 @@ True masculine identity is not about what you have or what role you hold — it'
        'Where has your masculine identity been most challenged by the divorce? What definition of masculinity do you want to model for your kids?',
        'Handle this with depth. Many divorced dads carry significant shame about identity. Help them examine where their masculine identity came from and whether it fits. Offer a wider definition rooted in character, presence, and love rather than status or control. Be grounded and real.', 39
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 40 (Week 6, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -522,7 +522,7 @@ The divorced dads who come through the hardest seasons intact almost always have
        'What is your relationship with something greater than yourself? What belief about life and meaning has sustained you most in this season?',
        'Be completely inclusive of different spiritual backgrounds. Ask curious, open questions. If the user has no spiritual practice, explore what gives them meaning and transcendence — nature, art, legacy, community. Help them name it so they can deliberately access it.', 40
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 41 (Week 6, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -535,7 +535,7 @@ This document will grow and change as you do. What matters is that you have one 
        'What is the single belief that has helped you most navigate this season? What belief is still causing you unnecessary suffering?',
        'Help the user articulate and refine their philosophy. Ask what they actually believe — not what they think they should believe. Help them find language for the wisdom they''ve earned through hard experience. Celebrate the coherence and authenticity of their worldview.', 41
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 42 (Week 6, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -546,7 +546,7 @@ Write your Being Blueprint: a one-page document that captures who you are at the
        'What do you now know about yourself that you didn''t fully acknowledge before this week?',
        'Synthesize the week. Help the user write or refine their Being Blueprint. Celebrate the depth of the work. Connect who they''ve discovered themselves to be with the dad they''re becoming. Be affirming and profound.', 42
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 6
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 43 (Week 7, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -559,7 +559,7 @@ What would intentional prioritization look like in your actual custody schedule?
        'Where do you feel most out of balance right now? Is the problem time, energy, or intention?',
        'Help the user replace the balance myth with a practical prioritization framework that fits their custody reality. Ask about their schedule — how many days with and without kids. Help them design different modes for different days. Be practical and liberating.', 43
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 44 (Week 7, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -572,7 +572,7 @@ Align your time with your values. Everything else is noise.',
        'What do your last seven days of choices show you are actually prioritizing? Is that what you want to be prioritizing?',
        'Help the user do an honest time audit and compare it to their stated priorities. Be direct if there''s a gap — but not harsh. Help them identify one concrete reallocation that would bring their time into better alignment with their priorities.', 44
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 45 (Week 7, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -585,7 +585,7 @@ Compartmentalization gets a bad reputation, but when it''s chosen rather than av
        'When are you most distracted from your kids by work worry — or most distracted from work by dad anxiety? What boundary would help most?',
        'Help the user create practical mental and logistical boundaries between dad time and career time. Ask about their custody schedule and work setup. Identify specific crossover moments where the boundary breaks down and help them design a fix.', 45
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 46 (Week 7, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -598,7 +598,7 @@ Boundaries are not walls — they are the edges that define a life of intention.
        'What are you saying yes to that you should be saying no to? What''s the fear underneath the inability to say no?',
        'Explore the patterns behind over-commitment. Help the user identify whether it''s guilt, fear of conflict, or identity. Help them practice specific no''s with language they can actually use. Connect boundary-setting to their ability to show up fully for what matters.', 46
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 47 (Week 7, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -611,7 +611,7 @@ You cannot manage a load you haven''t named. And you cannot get support for a st
        'What is the emotional labor of your divorce that is most invisible to others? What support would most help you carry it?',
        'Create space for the user to name the invisible work of divorced fatherhood. Validate without diminishing. Ask what support looks like — practical, emotional, or social. Help them identify one place they could ask for help this week.', 47
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 48 (Week 7, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -624,7 +624,7 @@ You can grieve and also laugh. You can be going through the hardest thing and st
        'What brings you genuine joy? When did you last allow yourself to feel it without guilt?',
        'Normalize joy for men who are suffering. Help them name specific things that bring genuine delight — not general platitudes. If they resist ("I don''t deserve to feel good right now"), challenge that gently and directly. Help them schedule one joy practice this week.', 48
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 49 (Week 7, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -637,7 +637,7 @@ Write your Balance Architecture — a simple one-page design for how you spend y
        'What change in your daily balance would have the biggest impact on your wellbeing and your presence with your kids?',
        'Synthesize and celebrate. Help the user articulate their balance architecture clearly. Ask what accountability they need to sustain it. Affirm that progress over perfection is the standard. Be practical and encouraging.', 49
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 7
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 50 (Week 8, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -650,7 +650,7 @@ Most men avoid this exercise because the numbers are frightening. But the fear o
        'What financial reality have you been avoiding looking at? What would change if you faced it directly this week?',
        'Be a steady, non-judgmental presence for what can be a very difficult financial picture. Help the user get clear on their numbers. Do not offer specific financial advice — but help them see their situation clearly and identify the most urgent lever to pull.', 50
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 51 (Week 8, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -663,7 +663,7 @@ Financial ambition, when rooted in love for your kids, is a noble and powerful f
        'What income would give you and your kids the life you want them to have? What would have to change to reach it?',
        'Help the user connect financial ambition to fatherly love — removing shame from wanting more. Ask about income sources, stability, and growth trajectory. Help them identify the highest-leverage income action they could take in the next 30 days.', 51
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 52 (Week 8, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -676,7 +676,7 @@ Extra income buys choices. Choices buy presence. Presence is the gift your kids 
        'What skill or knowledge do you have that someone else would pay for? What has stopped you from monetizing it?',
        'Help the user brainstorm realistic side income options based on their existing skills. Be concrete and specific — don''t let it stay abstract. Help them identify one option worth exploring and define the first step. Enthusiasm and practicality in equal measure.', 52
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 53 (Week 8, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -689,7 +689,7 @@ You can''t control the amount. You can control the meaning you give it.',
        'What emotion do you carry around child support? What would shift if you consciously chose to see it as your investment in your kids?',
        'Handle with great care — this is a charged topic. Don''t minimize genuine injustice. But help the user explore what the resentment costs them in energy and peace, and whether a different relationship to the payment is possible. Be honest and compassionate.', 53
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 54 (Week 8, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -702,7 +702,7 @@ Building for your kids'' future is an act of love they may not understand for de
        'What have you done to build financial security for your children''s future? What is one step you could take in the next 30 days?',
        'This is aspirational but practical. Help the user identify the first accessible step (many custodial accounts can be opened with $50). Ask if they have life insurance and a basic will — if not, encourage them to get these done. Be encouraging and action-oriented.', 54
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 55 (Week 8, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -715,7 +715,7 @@ Ambition for your kids'' sake is a different kind of ambition. It burns cleaner 
        'Five years from now, what does your career or business look like if things go well? What would you regret not having pursued?',
        'Help the user think big about their professional future without dismissing current constraints. Ask about their ambitions, their skills, the opportunities they see but haven''t pursued. Help them identify one high-leverage professional move to make in the next 90 days. Be energizing.', 55
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 56 (Week 8, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -728,7 +728,7 @@ Money in the service of fatherhood is one of the highest uses of masculine energ
        'What is the most important financial commitment you''re making coming out of this week? What will be different about your financial life in 90 days?',
        'Consolidate the week. Help the user write a clear, simple financial blueprint. Celebrate that they engaged with this honestly. Ask what accountability they need. Look forward with energy.', 56
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 8
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 57 (Week 9, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -741,7 +741,7 @@ You can''t protect anything external if your internal foundation is crumbling. S
        'What is the biggest threat to your wellbeing right now? What have you been ignoring that needs protection?',
        'Help the user name what is actually under threat. Some will immediately go to external threats (co-parent, legal, financial). Gently redirect to internal threats as well. Help them see that self-protection is a fatherhood imperative, not a luxury.', 57
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 58 (Week 9, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -754,7 +754,7 @@ A compromised emotional immune system makes you reactive, exhausted, and unavail
        'What in your current life is most consistently depleting your emotional immune system? What one change would most strengthen it?',
        'Help the user identify specific depleters and strengtheners. This is practical: screen time, toxic relationships, alcohol, rumination, negative news. Help them prioritize one depletion to reduce and one strengthener to increase. Be specific and tactical.', 58
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 59 (Week 9, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -767,7 +767,7 @@ You become who you spend time with. Choose accordingly.',
        'Who in your current life most consistently drains your energy? What would it look like to reduce that exposure without creating unnecessary conflict?',
        'Handle carefully — if the co-parent or family members are the primary energy drains, help the user strategize distance without escalation. Help them identify one relationship to invest more in and one to quietly create more distance from. Be practical and strategic.', 59
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 60 (Week 9, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -780,7 +780,7 @@ The boundary is not about punishment or war — it''s about creating a sustainab
        'Where does your co-parenting communication currently cross into territory that is draining, toxic, or counterproductive? What boundary would most improve your peace?',
        'Be practical and strategic here. Help the user design specific, implementable co-parenting communication boundaries. If there is high conflict, reference parallel parenting (treating it like a business transaction). The goal is the kids'' wellbeing and the dad''s sanity — in that order.', 60
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 61 (Week 9, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -793,7 +793,7 @@ Your peace is worth more than the dopamine hit of staying connected to everyone 
        'How does your current social media use affect your emotional state? What would you lose — and gain — from a 30-day fast?',
        'Help the user examine their specific social media habits without judgment. Ask which platforms and which usage patterns most disrupt peace. Challenge them to consider a period of reduction or fasting. Connect phone/social boundaries to their capacity for presence with kids.', 61
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 62 (Week 9, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -806,7 +806,7 @@ Where you find it — through church, through program communities, through group
        'Who are the men in your life who know your real story? What would it take to build the kind of brotherhood that would actually sustain you?',
        'Help the user audit their male friendships with honesty. If they''re isolated — which many divorced dads are — normalize it and help them identify one place to begin building connection. Ask what kind of brother they want to be as well as what they need. Be direct and encouraging.', 62
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 63 (Week 9, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -819,7 +819,7 @@ Write your Week 9 Declaration. One sentence per protection: this is what I''m pr
        'What protection that you''ve been avoiding this week do you most need to put in place right now?',
        'Synthesize and challenge. The Protection phase is about making real decisions, not just awareness. Help the user name the one protection they''ve been most reluctant to put in place — and help them commit to it. Be direct and affirming.', 63
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 9
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 64 (Week 10, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -832,7 +832,7 @@ They didn''t choose this. You are their shield.',
        'Where have you, even unintentionally, exposed your kids to adult dynamics in this divorce? What commitment are you making to protect them more fully?',
        'Be non-judgmental — nearly every divorced parent has done some version of what this task addresses. Help the user identify specific behaviors to change, not just awareness. The children''s bill of rights they write should be specific and actionable. Be warm but firm.', 64
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 65 (Week 10, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -845,7 +845,7 @@ What your kids most fear is that your love is contingent and that they might los
        'What does each of your children most need to hear from you right now? When will you tell them?',
        'Help the user prepare for this conversation if they haven''t had it, or process it if they have. Ask about each child''s age, personality, and what they seem most anxious about. Help the user find the right words. This is one of the most important tasks in the program.', 65
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 66 (Week 10, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -858,7 +858,7 @@ Meet them where they are.',
        'What does each of your children, at their current age, most need from you in terms of how you talk about the divorce and what you make sure they know?',
        'Ask for the ages of the user''s children. Offer specific, age-appropriate communication guidance for each. If they have teenagers, prepare them for the anger and resistance. Help them see their role as the steady anchor regardless of how the kids respond.', 66
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 67 (Week 10, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -871,7 +871,7 @@ Your kids'' emotional health requires both parents to be safe to love.',
        'Have you, even subtly, made your kids feel they need to choose? What specific commitment are you making today to protect their ability to love both parents?',
        'This requires honesty the user may resist. Be gentle but clear: loyalty conflicts cause lasting psychological harm. Help them identify specific behaviors to change. If there is legitimate safety concern about the other parent, acknowledge that nuance — but distinguish safety concerns from loyalty competition.', 67
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 68 (Week 10, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -884,7 +884,7 @@ Your kids can handle a lot when they can count on you. They need to be able to c
        'On a scale of 1-10, how consistent are you as a presence in your kids'' lives right now? What is one thing you could do to increase that number?',
        'Help the user think about consistency honestly. Ask about their custody schedule and what their presence looks like on their days. Challenge them to identify one specific way to be more reliably present. Be affirming of what they''re already doing well.', 68
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 69 (Week 10, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -897,7 +897,7 @@ You are raising people who will face a hard world. Give them what they need.',
        'What qualities of resilience do you most want your kids to develop? How are you modeling those qualities right now?',
        'Help the user think about resilience-building in practical terms. Ask about their kids'' responses to challenge. Discuss how modeling resilience (which they''re actively doing in this program) is one of the most powerful things they can offer their children. Be affirming and inspiring.', 69
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 70 (Week 10, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -910,7 +910,7 @@ Write your Week 10 Declaration: I am my children''s shield and here is what that
        'If your kids could describe you as a dad at the end of this year, what do you most want them to say?',
        'Bring Week 10 to a meaningful close. The question about what the kids would say is powerful — help the user stay with it and then connect the answer to specific choices. This is some of the most meaningful work in the program. Honor it.', 70
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 10
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 71 (Week 11, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -925,7 +925,7 @@ Knowing your legal position is not paranoia — it is protection.',
        'What aspect of your legal situation are you most uncertain or anxious about? What information do you most need?',
        'Be supportive but clear that legal issues require legal professionals. Help the user identify the most pressing legal question or concern. Encourage them to consult with a family law attorney if they haven''t recently. Help them articulate what they need to know.', 71
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 72 (Week 11, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -938,7 +938,7 @@ This is not about building a case. It is about protecting yourself from a case b
        'How well-documented is your co-parenting situation right now? What would be your vulnerability if a dispute arose tomorrow?',
        'Help the user set up practical documentation habits. Recommend specific tools (co-parenting communication apps). Emphasize that this is protective, not adversarial. Ask what specific documentation gaps they have and help them close the most important one first.', 72
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 73 (Week 11, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -951,7 +951,7 @@ You agreed to this document. You need to know it.',
        'What provision in your custody agreement are you most uncertain about? What would you most want to change and under what circumstances could you pursue that change?',
        'Encourage this review seriously. Ask if they have questions about specific provisions. If modifications seem appropriate, note that this requires legal counsel and typically requires showing a material change in circumstances. Be practical and empowering — knowledge is protection.', 73
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 74 (Week 11, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -964,7 +964,7 @@ Financial separation is not just accounting — it is legal protection.',
        'Are there financial entanglements from the marriage that you have not fully resolved? What is the most urgent one to address?',
        'Help the user create a financial separation checklist and identify what is still unresolved. Be practical and specific. For complex situations, encourage consultation with a financial advisor or attorney. This task can surface significant anxiety — hold it steadily.', 74
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 75 (Week 11, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -977,7 +977,7 @@ Good credit is freedom. It is the ability to rent an apartment, buy a car, event
        'What is your current credit situation? What is the single most important credit action you can take in the next 30 days?',
        'Help the user get specific about their credit situation. If they don''t know their credit score, encourage them to check it today. Help them identify one actionable credit improvement step. Connect credit health to their ability to provide stability for their kids.', 75
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 76 (Week 11, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -990,7 +990,7 @@ This is a profound act of love. Do it.',
        'If you died tomorrow, are your kids protected? What specific estate planning step is most urgent for you to take?',
        'Be direct about the importance of this without being morbid. Many people will need to update beneficiaries immediately — this is urgent. Life insurance for divorced dads with dependents is a non-negotiable. Help them identify the first step — often just calling their HR department or an estate attorney.', 76
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 77 (Week 11, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1003,7 +1003,7 @@ Write your Asset Protection Plan — a simple checklist with deadlines.',
        'What legal or financial protection have you been putting off that you most need to address? What would it cost you to ignore it another six months?',
        'Synthesize the week and hold the user accountable to specific action. Asset protection is a love language — help them feel the urgency as love for their kids, not fear. Challenge them to commit to one specific action this week.', 77
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 11
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 78 (Week 12, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1016,7 +1016,7 @@ Drama taxes your nervous system. Every unit of energy you spend on drama is a un
        'What source of drama in your life is costing you the most? What would it look like to disengage from it entirely?',
        'Help the user identify their biggest drama sources with specificity. Some will be systemic (a high-conflict co-parent). For those, parallel parenting and documentation are the tools. For others, it''s a choice. Help them commit to one specific disengagement. Be practical.', 78
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 79 (Week 12, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1029,7 +1029,7 @@ Your kids don''t need a dad who has no problems. They need a dad who is present 
        'When are you most likely to be physically present but mentally absent with your kids? What triggers that absence?',
        'Help the user identify specific transition moments where mindfulness would help most. Teach a simple practice they can use — even 60 seconds of deliberate breathing before entering the house. Connect presence to the quality of time with kids, not quantity. Make it practical.', 79
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 80 (Week 12, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1042,7 +1042,7 @@ Viktor Frankl: between stimulus and response there is a space. In that space lie
        'What is the co-parent''s most reliable trigger for you? What does it awaken in you, and what would a regulated response look like?',
        'This is tactical and important. Help the user map their trigger-response pattern precisely. Then help them design an interrupt: a pause, a physical practice, a rule (never respond to a difficult text immediately). The goal is 24 hours of practice, not perfection. Be practical and direct.', 80
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 81 (Week 12, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1055,7 +1055,7 @@ Having a toolkit means you''re not improvising in crisis. You know what to reach
        'Which regulation practice has worked best for you in this program? When do you most need it but most forget to use it?',
        'Help the user build their personal regulation toolkit based on what they''ve experienced in this program. Ask which practices have actually worked. Help them design a simple reference: state > tool. Encourage them to screenshot it and save it.', 81
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 82 (Week 12, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1068,7 +1068,7 @@ For your kids'' sake, you need to be free.',
        'What are you most struggling to forgive — yourself or someone else? What would freedom from that unforgiveness feel like?',
        'Handle with great care — forgiveness is deeply personal and often complex. Do not push premature forgiveness. But help the user see what carrying unforgiveness is costing them. Explore what forgiveness could mean without requiring trust, reconciliation, or the absence of accountability.', 82
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 83 (Week 12, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1081,7 +1081,7 @@ Some of the most grateful people alive have lost the most. Gratitude is a practi
        'What five things are you genuinely grateful for today? What has this hard season given you that you wouldn''t have gotten any other way?',
        'Help the user find genuine gratitude — not forced positivity. Ask what they''ve learned, who they''ve become, what they''ve discovered about themselves through this season. Help them see gains within the loss. This is powerful when done authentically.', 83
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 84 (Week 12, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1094,7 +1094,7 @@ Tomorrow you enter the Profit Phase. This is where everything you''ve built begi
        'What is the single most important thing the Protection Phase gave you? What are you most proud of from the past month?',
        'Celebrate this milestone fully. Help the user see how far they''ve come and what they''ve built over three phases. The Profit phase ahead is expansive and generative — create momentum and excitement for what''s coming. Be genuinely celebratory.', 84
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 12
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 85 (Week 13, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1107,7 +1107,7 @@ Men are notoriously bad at initiating friendship. That means the man who does it
        'Who are the two or three friends most important to your next chapter? What would you need to invest in those friendships to deepen them?',
        'Help the user think practically about friendship-building. If they''re isolated, help them identify one specific place or community to find new connection. If they have existing friendships to deepen, help them plan one concrete step. Male friendship is often built in parallel activity — ask what they could do together.', 85
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 86 (Week 13, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1120,7 +1120,7 @@ Date with intention. Your future family starts with the clarity you bring to thi
        'Where are you in your readiness to date? What do you know about what you want in a future partner — and what do you know you can''t tolerate?',
        'Meet the user where they are on the dating readiness spectrum without judgment. If they''re already dating, help them think through the kid-introduction question specifically. If not ready, validate that — and help them think about what readiness would look like. Be thoughtful and practical.', 86
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 87 (Week 13, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1133,7 +1133,7 @@ Your relationship with your kids is the most important relationship of your life
        'If you asked each of your kids today how they feel about their relationship with you, what do you think they would honestly say?',
        'Help the user plan the one-on-one experiences. Ask about each child''s specific interests and what a meaningful experience looks like for them. Help the user prepare for the "how are you really" conversation. This is practice for a lifetime of connected fathering.', 87
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 88 (Week 13, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1146,7 +1146,7 @@ Also identify the men you want in your inner circle as brothers — men who are 
        'Who is the mentor figure in your life you most admire? What would it take to initiate a relationship with him?',
        'Help the user identify specific mentor candidates. Help them craft the outreach — what to say, what to ask. Normalize that men rarely get asked and are often honored when they are. Also help them identify brotherhood sources: men''s groups, faith communities, programs like this one.', 88
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 89 (Week 13, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1159,7 +1159,7 @@ This is the longest relationship you''ll have in your post-divorce life. Treat i
        'What kind of co-parenting relationship do you want at your kids'' graduations? What would it take to build it from here?',
        'The long-game reframe is powerful for men stuck in short-term conflict. Help the user see the graduation moment vividly and work backward: what would it take to get there? Identify one specific change they could make. Be strategic and forward-looking.', 89
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 90 (Week 13, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1172,7 +1172,7 @@ Your home is a sanctuary. You design its culture.',
        'What principles do you want to govern how you integrate new relationships and people into your children''s lives?',
        'Help the user articulate their family integration principles before they need them. If they''re already navigating this (her new partner, their own new relationship), help them think through the specific situation. Be thoughtful, child-centered, and practical.', 90
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 91 (Week 13, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1183,7 +1183,7 @@ Write your Relationship Blueprint: the relationships you''re investing in, the p
        'What is the relationship that most needs your deliberate investment right now? What is one thing you could do this week?',
        'Synthesize the week. Help the user prioritize — they can''t invest deeply in all relationships simultaneously. Help them identify the one or two highest-priority relationships and one concrete action for each. Be warm and affirming.', 91
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 13
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 92 (Week 14, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1196,7 +1196,7 @@ A limiting money story, left unexamined, will silently sabotage every financial 
        'What is your earliest money memory? What did it teach you about money and wealth that may still be running in the background?',
        'Help the user excavate their money story with curiosity. Ask what messages they absorbed about money, wealth, and deserving. Help them identify the one belief that is most limiting their financial growth. Do not offer financial advice — this is psychological work.', 92
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 93 (Week 14, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1209,7 +1209,7 @@ Your income ceiling is mostly mental before it is circumstantial.',
        'What limiting belief about your income ceiling is most holding you back? What would you pursue financially if you believed it was fully possible?',
        'Help the user brainstorm with energy and specificity. Ask follow-up questions about their skills, industry, and opportunities. Help them get concrete: not just "start a business" but "consult for X type of company in Y way." Identify the one income expansion path with the best combination of likelihood and impact.', 93
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 94 (Week 14, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1222,7 +1222,7 @@ The practice changes the wiring over time. It doesn''t happen overnight — whic
        'Where in your financial life are you most operating from scarcity? What would the equivalent abundance move look like?',
        'Help the user distinguish between genuine abundance thinking and denial of real challenges. Abundance mindset acknowledges the reality and chooses an expansive response. Help them find specific examples of abundance opportunities in their actual life. Be energizing.', 94
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 95 (Week 14, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1235,7 +1235,7 @@ The specific investment matters less than the commitment. You are sending a mess
        'What have you done since Week 8 to start investing in your children''s financial futures? If nothing yet — what is stopping you?',
        'Follow up from Week 8. If they took action, celebrate it and encourage next steps. If not, gently challenge the delay and help them identify the specific barrier. Help them take the first concrete step — even opening an account online — today.', 95
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 96 (Week 14, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1246,7 +1246,7 @@ Today you calculate your Financial Independence number: your monthly essential e
        'What would financial independence mean for your ability to be the dad you want to be? What would you do differently with your time if money wasn''t the primary driver?',
        'Introduce the FI concept without being preachy. Help the user calculate their number. Ask what they would do with financial freedom — connect it to fatherhood. Encourage small steps toward that number starting now, even if the destination feels distant. Be inspiring and practical.', 96
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 97 (Week 14, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1259,7 +1259,7 @@ You are your kids'' first financial education. Make it a good one.',
        'What do you want your kids to know about money by the time they leave your home? What is one practice you could start this week to teach it?',
        'Tailor to the ages of their kids. For young children: simple allowance and three jars (spend/save/give). For preteens: understanding income and expenses. For teens: beginning investing concepts. Help them identify one specific practice to implement. Make it fun and engaged.', 97
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 98 (Week 14, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1270,7 +1270,7 @@ Write your final Money Blueprint — your money story revised, your income targe
        'What is the most important money belief you are choosing to upgrade as you complete this program?',
        'Synthesize with energy. The money work is some of the most practically life-changing in the program. Help the user consolidate their commitments clearly. Ask what accountability they need to sustain the financial changes they''ve committed to.', 98
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 14
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 99 (Week 15, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1283,7 +1283,7 @@ You have 168 hours per week. That''s the same number as every person who has eve
        'After tracking a day, what surprised you most about where your time went? What is the single biggest time investment you want to shift?',
        'Help the user do the audit with honesty. Ask what surprised them. Identify the biggest gap between intended and actual time allocation. Help them design one concrete time reallocation — specific hours moved from low-value to high-value use.', 99
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 100 (Week 15, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1296,7 +1296,7 @@ One hundred days in, you know more about yourself as a dad than you did at the s
        'What is the quality time practice that most connects you to each of your children? What is one new ritual you could start this week?',
        'Celebrate Day 100 genuinely. Then help the user design specific quality time practices for each child. Ask about each child''s personality and what brings them out. Help them create one new recurring ritual — something simple and sustainable that belongs to them and their kids.', 100
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 101 (Week 15, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1309,7 +1309,7 @@ Practice it once. Then twice. Build the muscle. Over time, presence becomes your
        'When are you most naturally fully present? What most reliably pulls you out of presence — and what brings you back?',
        'Help the user practice presence in the chat context — slow down, ask them to describe what''s around them, what their kids were doing today, what they noticed. Bring them into the present moment. Help them identify their specific presence saboteurs and design an interrupt for each.', 101
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 102 (Week 15, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1322,7 +1322,7 @@ Time is the only non-renewable resource. Treat it accordingly.',
        'What are your three biggest time wasters? What would your life look like if you eliminated or dramatically reduced each one?',
        'Help the user identify their specific time wasters with honesty. Ask how they know — what does the time waster cost them in terms of what they don''t get to do? Help them commit to eliminating one and reducing one. Be specific and practical.', 102
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 103 (Week 15, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1335,7 +1335,7 @@ Every system you build is a unit of cognitive and emotional capacity freed up fo
        'What area of your life most consistently falls apart due to lack of systems? What would a simple system look like there?',
        'Help the user identify the highest-leverage area to systemize. Ask what currently causes the most friction or mental load. Help them design a simple, specific system — not a complex one. The best system is the one simple enough to actually use.', 103
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 104 (Week 15, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1348,7 +1348,7 @@ Every week you get 168 hours. A handful of them are legacy hours. Guard them lik
        'Looking at your week ahead, what are your legacy hours? What would have to be true for you to protect them completely?',
        'Help the user identify their specific legacy hours for the coming week. Ask what typically invades that time. Help them build the habit of blocking legacy hours first on their calendar. Connect this to their north star vision. This is time design at the highest level.', 104
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 105 (Week 15, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1359,7 +1359,7 @@ Write your Time Blueprint: your daily architecture (morning, work blocks, kid ti
        'In the time you have left with your kids before they leave home, what do you most want to make sure happens? What does that mean for how you spend next week?',
        'The question about time remaining before kids leave home is a powerful one. Help the user feel the urgency and the preciousness of this season. Connect the Time Blueprint to specific kid experiences they want to ensure. Be moving and practical in equal measure.', 105
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 15
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 106 (Week 16, Day 1)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1372,7 +1372,7 @@ This document will serve you for the rest of your life as a dad.',
        'What is the single most important thing you believe about fatherhood that you didn''t believe — or hadn''t articulated — when you started this program?',
        'Help the user write or refine their parenting philosophy. Ask what they believe about children, about fathers, about what childhood should feel like. Help them find language that is genuinely theirs. This is a profound document — honor the depth of what they''ve built.', 106
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 107 (Week 16, Day 2)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1385,7 +1385,7 @@ The long game of fatherhood is a love story. Write the next chapter.',
        'What do you most want your adult children to know about who you were during this season of your life?',
        'Help the user write or begin this letter. Ask what they most want their children to understand about this period — not the circumstances but who their dad was in the middle of them. This letter is a legacy artifact. Take it seriously and help them go deep.', 107
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 108 (Week 16, Day 3)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1398,7 +1398,7 @@ Character is built in the daily moments between the big ones.',
        'What are the most important character qualities you want each of your children to develop? What is one specific thing you could do this week to cultivate each?',
        'Help the user get specific about each child. Ask about each child''s personality, strengths, and growth edges. Help them design one concrete character-building practice per child — a conversation, a challenge, a story, a book. This is joyful parenting work.', 108
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 109 (Week 16, Day 4)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1411,7 +1411,7 @@ Traditions are the architecture of a family culture. You are the architect.',
        'What family traditions from your own childhood do you most want to continue? What new traditions could you create that are distinctly yours?',
        'Help the user design specific, realistic traditions. Ask what they already do that could be formalized. Ask what their kids love and how that could become a ritual. The best traditions are simple, repeatable, and loved — not elaborate. Help them commit to at least one.', 109
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 110 (Week 16, Day 5)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1424,7 +1424,7 @@ Seal the letters. Give them at the appointed time. Or leave them somewhere they'
        'What do you most want each of your children to know about themselves — about their strength, their worth, their potential — that you want to put into writing now while they''re still young?',
        'Help the user write or begin letters for each child. Ask what they see in each child''s essential character. Help them find words that go deeper than praise — that name what they see in their children''s souls. These letters are irreplaceable. Take the time.', 110
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 111 (Week 16, Day 6)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1437,7 +1437,7 @@ You deserve to acknowledge this. Your kids deserve a dad who can receive his own
        'What are you most proud of from the last 16 weeks? What is the most significant thing that has changed about you?',
        'Lead the user through genuine self-acknowledgment. Ask specifically about the things they did that were hard, the patterns they broke, the moments they showed up when they didn''t want to. Help them receive the growth — not dismiss it. This is important and often emotionally powerful.', 111
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);
 
 -- Day 112 (Week 16, Day 7)
 INSERT INTO daily_tasks (week_id, day_number, title, description, reflection_prompt, chat_guidance, task_order)
@@ -1450,4 +1450,4 @@ This is not the end. This is the foundation. What you build from here is the lif
        'In one sentence — the sentence you want your kids to remember you by — who are you?',
        'This is the culminating moment of the program. Make it matter. Help the user write a Graduation Declaration that is honest, powerful, and theirs. Celebrate everything they''ve accomplished. Send them forward with genuine conviction that what they''ve built here is real and will last. This is your finest moment as their AI companion — be fully present for it.', 112
 FROM weeks w WHERE w.program_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' AND w.week_number = 16
-ON CONFLICT (week_id, day_number) DO NOTHING;
+ON DUPLICATE KEY UPDATE day_number = VALUES(day_number);

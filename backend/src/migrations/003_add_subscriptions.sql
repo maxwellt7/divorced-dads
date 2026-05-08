@@ -1,38 +1,23 @@
 -- ============================================================
--- Divorced Dads — Migration: Subscriptions
+-- Divorced Dads — Migration: Subscriptions (MySQL)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS subscriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  stripe_customer_id TEXT NOT NULL,
-  stripe_subscription_id TEXT,
-  stripe_price_id TEXT,
-  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'monthly', 'lifetime')),
-  status TEXT NOT NULL DEFAULT 'inactive' CHECK (status IN ('active', 'inactive', 'past_due', 'canceled', 'trialing')),
-  current_period_start TIMESTAMPTZ,
-  current_period_end TIMESTAMPTZ,
-  cancel_at_period_end BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE(user_id),
-  UNIQUE(stripe_customer_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
-CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer ON subscriptions(stripe_customer_id);
-CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_sub ON subscriptions(stripe_subscription_id);
-
-ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
-
--- Users can only read their own subscription
-CREATE POLICY "subscriptions_own_read" ON subscriptions
-  FOR SELECT USING (auth.uid() = user_id);
-
--- Only service role can write (via backend)
-CREATE POLICY "subscriptions_service_write" ON subscriptions
-  FOR ALL USING (auth.role() = 'service_role');
-
--- Updated_at trigger
-CREATE TRIGGER subscriptions_updated_at BEFORE UPDATE ON subscriptions
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  id                    VARCHAR(36)  NOT NULL DEFAULT (UUID()),
+  user_id               VARCHAR(36)  NOT NULL,
+  stripe_customer_id    VARCHAR(255) NOT NULL,
+  stripe_subscription_id VARCHAR(255) NULL,
+  stripe_price_id       VARCHAR(255) NULL,
+  plan_type             ENUM('free','monthly','lifetime') NOT NULL DEFAULT 'monthly',
+  status                ENUM('active','inactive','past_due','canceled','trialing') NOT NULL DEFAULT 'inactive',
+  current_period_start  DATETIME(3)  NULL,
+  current_period_end    DATETIME(3)  NULL,
+  cancel_at_period_end  TINYINT(1)   NOT NULL DEFAULT 0,
+  created_at            DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at            DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_subscriptions_user (user_id),
+  UNIQUE KEY uq_subscriptions_stripe_customer (stripe_customer_id),
+  KEY idx_subscriptions_stripe_sub (stripe_subscription_id),
+  CONSTRAINT fk_subscriptions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
