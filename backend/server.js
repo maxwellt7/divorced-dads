@@ -5,7 +5,7 @@ dotenv.config();
 // Now import the rest after env vars are loaded
 import app from './src/app.js';
 import { logger } from './src/utils/logger.js';
-import { testConnection } from './src/config/database.js';
+import { testConnection } from './src/config/database.js'; // verifies DB on boot
 
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // Required for Railway
